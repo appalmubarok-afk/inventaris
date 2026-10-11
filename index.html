@@ -1,32 +1,1988 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<!-- ====== JUDUL TAB & FAVICON (ubah di sini) ====== -->
+<title>Inventaris SMP IT Al Mubarok</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<style>
+  :root{
+    --primary:#4f46e5; --primary-dark:#4338ca; --primary-light:#eef0ff;
+    --bg:#f4f5fb; --sidebar:#141a2e; --sidebar-2:#1b2340; --bar:#26265e;
+    --sidebar-active:#4f46e5; --text:#1e293b; --muted:#64748b; --border:#e6e8f2;
+    --danger:#ef4444; --success:#16a34a; --warning:#f59e0b;
+    --shadow-sm:0 1px 2px rgba(16,24,40,.05), 0 1px 4px rgba(16,24,40,.06);
+    --shadow-md:0 8px 20px -4px rgba(16,24,40,.12);
+    --radius:14px; --radius-sm:10px;
+    --topbar-h:64px; --footer-h:50px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;}
+  body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);
+    -webkit-text-size-adjust:100%;}
+  /* min-height (bukan height) + overflow-y:auto supaya di HP dengan layar pendek atau saat
+     keyboard muncul, halaman login tetap bisa discroll dan tidak "terpotong" ke bawah. */
+  #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(1100px 550px at 12% -10%, rgba(124,108,240,.35), transparent 60%),
+      radial-gradient(900px 500px at 110% 110%, rgba(79,70,229,.30), transparent 60%),
+      linear-gradient(135deg,var(--sidebar),#2b2f8f 65%,var(--primary));
+    padding:24px 12px;overflow-y:auto;}
+  .login-box{position:relative;background:#fff;padding:44px 38px 36px;border-radius:20px;
+    box-shadow:0 30px 70px -18px rgba(15,15,60,.45), 0 10px 26px rgba(0,0,0,.10);
+    width:352px;text-align:center;overflow:hidden;}
+  .login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;
+    background:linear-gradient(90deg,var(--primary),#8b7bf0);}
+  .login-box img.logo{width:60px;height:60px;object-fit:contain;margin-bottom:10px;}
+  .login-box h1{font-size:23px;margin:6px 0 4px;color:var(--sidebar);font-weight:800;letter-spacing:.2px;}
+  .login-box p{color:var(--muted);margin:0 0 26px;font-size:13px;}
+  .field{margin-bottom:16px;text-align:left;}
+  .field label{display:block;font-size:13px;margin-bottom:6px;font-weight:600;color:var(--text);}
+  .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--border);
+    border-radius:var(--radius-sm);font-size:14px;background:#fff;color:var(--text);
+    transition:border-color .15s,box-shadow .15s;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(79,70,229,.14);}
+  .password-wrap{position:relative;}
+  .password-wrap input{padding-right:40px;}
+  .password-toggle{position:absolute;top:50%;right:6px;transform:translateY(-50%);background:none;border:none;
+    cursor:pointer;font-size:16px;line-height:1;padding:6px;color:var(--muted);}
+  .password-toggle:hover{color:var(--primary);}
+  .btn{cursor:pointer;border:none;border-radius:var(--radius-sm);padding:10px 18px;font-size:14px;
+    font-weight:600;transition:.15s ease;}
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;
+    box-shadow:0 4px 12px rgba(79,70,229,.32);}
+  .btn-primary:hover{box-shadow:0 6px 16px rgba(79,70,229,.42);transform:translateY(-1px);}
+  .btn-block{width:100%;}
+  .btn-outline{background:#fff;border:1px solid var(--border);color:var(--text);}
+  .btn-outline:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);}
+  .btn-danger{background:linear-gradient(135deg,#f87171,var(--danger));color:#fff;
+    box-shadow:0 4px 12px rgba(239,68,68,.28);}
+  .btn-danger:hover{box-shadow:0 6px 16px rgba(239,68,68,.38);transform:translateY(-1px);}
+  .btn-sm{padding:6px 10px;font-size:12px;}
+  #errorMsg{color:var(--danger);font-size:13px;margin-top:10px;min-height:16px;font-weight:600;}
 
-    <title>E-INVENTARIS SMP IT AL MUBAROK</title>
-    <link rel="icon" type="image/png" href="logo.png">
-    <meta name="description" content="Sistem E-Inventaris SMP IT Al Mubarok Kras Kediri.">
-    <meta name="robots" content="noindex, nofollow">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://inventaris.smpitalmubarok.sch.id./">
-    <meta property="og:title" content="E-Inventaris SMP IT AL MUBAROK">
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #ffffff; }
-        iframe { border: none; width: 100%; height: 100%; }
-    </style>
+  /* #app & .main memakai flex column supaya footer selalu menutup halaman dengan rapi:
+     kalau konten pendek, footer tetap di bawah viewport (bukan "menggantung" di tengah);
+     kalau konten panjang, halaman memanjang mengikuti isi (bukan terpotong di 100vh). */
+  #app{display:none;min-height:100vh;}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:230px;
+    background:linear-gradient(180deg,var(--sidebar-2),var(--sidebar));color:#cbd5e1;padding:14px 0;
+    overflow-y:auto;box-shadow:2px 0 16px rgba(0,0,0,.18);}
+  .sidebar .brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+    gap:12px;padding:22px 20px 24px;margin-bottom:14px;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sidebar .brand img{width:74px;height:74px;object-fit:contain;border-radius:16px;background:#fff;padding:6px;
+    box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .sidebar .brand h2{color:#fff;font-size:19px;margin:0;line-height:1.25;font-weight:800;letter-spacing:.2px;}
+  .sidebar .brand small{color:#8b95c0;font-size:12.5px;display:block;margin-top:2px;}
+  .nav-item{display:flex;flex-direction:row;align-items:center;gap:12px;margin:3px 12px;
+    padding:12px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:15px;font-weight:500;
+    color:#aab2d8;white-space:nowrap;transition:.15s ease;}
+  .nav-item .ic{flex:0 0 22px;width:22px;text-align:center;font-size:18px;line-height:1;}
+  .nav-item span:last-child{flex:1 1 auto;}
+  .nav-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+  .nav-item.active{background:linear-gradient(135deg,var(--primary),#7c6cf0);color:#fff;
+    box-shadow:0 6px 14px rgba(79,70,229,.4);}
+  .main{margin-left:230px;padding:0;min-height:100vh;display:flex;flex-direction:column;}
+  .topbar{background:var(--bar);padding:14px 28px;display:flex;justify-content:space-between;align-items:center;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);position:fixed;top:0;left:230px;right:0;z-index:60;}
+  .topbar #pageHeading{color:#fff;font-size:15.5px;letter-spacing:.2px;}
+  .topbar .userinfo{font-size:13px;color:#aab2d8;}
+  .topbar .userinfo b{color:#fff;}
+  .content{padding:calc(var(--topbar-h) + 26px) 28px 26px;flex:1 0 auto;}
+  .page{display:none;}
+  .page.active{display:block;}
+  h1.page-title{font-size:21px;margin:0 0 20px;font-weight:800;color:var(--text);}
+  .app-footer{flex-shrink:0;text-align:center;padding:16px 12px;font-size:12px;color:#c3c9e6;
+    font-weight:600;background:var(--bar);box-shadow:0 -2px 10px rgba(0,0,0,.15);}
+
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+  .card{background:#fff;border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border);
+    box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s;}
+  .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+  .card .label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;}
+  .card .value{font-size:27px;font-weight:800;}
+  .card.total .value{color:var(--primary);}
+  .card.baik .value{color:var(--success);}
+  .card.ringan .value{color:var(--warning);}
+  .card.berat .value{color:var(--danger);}
+  .chart-box{background:#fff;border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border);
+    box-shadow:var(--shadow-sm);}
+  #chartKondisi{width:100%;height:320px;}
+
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+  .toolbar .actions{display:flex;gap:8px;}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:var(--radius-sm);overflow:hidden;font-size:13px;}
+  thead th{background:var(--primary-light);text-align:left;padding:11px 12px;font-size:11.5px;
+    color:var(--primary-dark);font-weight:700;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;}
+  tbody td{padding:10px 12px;border-top:1px solid var(--border);vertical-align:middle;white-space:nowrap;}
+  tbody tr{transition:background .12s;}
+  tbody tr:hover{background:#f7f7ff;}
+  .table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:auto;
+    box-shadow:var(--shadow-sm);}
+  .thumb{width:44px;height:44px;object-fit:cover;border-radius:8px;background:#e5e7eb;}
+  .badge{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.2px;}
+  .badge.baik{background:#dcfce7;color:#166534;}
+  .badge.ringan{background:#fef3c7;color:#92400e;}
+  .badge.berat{background:#fee2e2;color:#991b1b;}
+  .badge.admin{background:#e0e7ff;color:#3730a3;}
+  .badge.userrole{background:#f1f5f9;color:#334155;}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,17,35,.5);
+    align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(2px);}
+  .modal-overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:18px;padding:26px;width:460px;max-height:88vh;overflow:auto;
+    box-shadow:0 30px 60px -14px rgba(15,15,60,.35);}
+  .modal h2{margin:0 0 18px;font-size:18px;font-weight:800;color:var(--text);}
+  .modal .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .loading{font-size:13px;color:var(--muted);padding:20px;text-align:center;}
+  .toast{position:fixed;bottom:22px;right:22px;background:var(--sidebar);color:#fff;padding:13px 20px;
+    border-radius:var(--radius-sm);font-size:13px;font-weight:600;display:none;z-index:200;
+    box-shadow:0 10px 28px rgba(0,0,0,.3);}
+  .settings-form{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:28px;
+    width:100%;box-shadow:var(--shadow-sm);}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  @media (max-width:900px){ .row3{grid-template-columns:1fr;} }
+  .empty{padding:30px;text-align:center;color:var(--muted);font-size:13px;}
+  .current-logo{width:70px;height:70px;object-fit:contain;border:1px solid var(--border);border-radius:10px;
+    margin-bottom:10px;background:#fafafa;}
+  .filter-bar{display:grid;grid-template-columns:repeat(5,1fr) auto;gap:10px;align-items:end;background:#fff;
+    border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;
+    box-shadow:var(--shadow-sm);}
+  .filter-bar .field{margin-bottom:0;}
+  .filter-bar .field label{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;}
+  .filter-bar select{padding:8px 10px;font-size:13px;}
+  @media (max-width:1100px){ .filter-bar{grid-template-columns:1fr 1fr 1fr;} }
+  .modal.modal-detail{width:520px;}
+  .detail-photo{width:100%;max-height:320px;object-fit:contain;border-radius:12px;background:#f1f5f9;
+    border:1px solid var(--border);margin-bottom:16px;}
+  .detail-grid{display:grid;grid-template-columns:140px 1fr;row-gap:10px;column-gap:8px;font-size:13.5px;}
+  .detail-grid b{color:var(--muted);font-weight:600;}
+  tbody tr.clickable{cursor:pointer;}
+
+  /* ================= LOADING OVERLAY (animasi loading) ================= */
+  .global-loading{display:none;position:fixed;inset:0;background:rgba(244,245,251,.75);
+    z-index:400;align-items:center;justify-content:center;flex-direction:column;gap:12px;backdrop-filter:blur(1px);}
+  .global-loading.show{display:flex;}
+  .spinner{width:44px;height:44px;border:5px solid var(--primary-light);border-top-color:var(--primary);
+    border-radius:50%;animation:spin .8s linear infinite;}
+  .global-loading .loading-text{font-size:13px;color:var(--text);font-weight:700;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  /* spinner kecil dipakai inline di dalam tombol saat proses berjalan */
+  .btn-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.5);
+    border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;
+    vertical-align:middle;}
+  .btn-outline .btn-spinner{border:2px solid rgba(79,70,229,.3);border-top-color:var(--primary);}
+
+  /* ================= CETAK LABEL ================= */
+  .label-select-col{width:36px;text-align:center;}
+  #tblLabel input[type="checkbox"], #chkLabelAll{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
+
+  /* ================= HAMBURGER & MOBILE SIDEBAR ================= */
+  body.no-scroll{overflow:hidden;}
+  .hamburger{display:none;background:none;border:none;font-size:22px;line-height:1;cursor:pointer;color:#fff;padding:4px 6px;}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,25,.55);z-index:140;backdrop-filter:blur(1px);}
+  .sidebar-overlay.show{display:block;}
+
+  /* ================= RESPONSIVE / MOBILE ================= */
+  @media (max-width:900px){
+    .cards{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width:768px){
+    .hamburger{display:inline-block;}
+    .sidebar .brand{flex-direction:row;text-align:left;align-items:center;
+      gap:12px;padding:0 22px;margin-bottom:22px;border-bottom:none;}
+    .sidebar .brand img{width:42px;height:42px;border-radius:10px;padding:0;box-shadow:none;}
+    .sidebar{
+      transform:translateX(-100%);
+      transition:transform .25s ease;
+      z-index:150;
+      box-shadow:4px 0 24px rgba(0,0,0,.25);
+    }
+    .sidebar.open{transform:translateX(0);}
+    /* Tinggi mengikuti layar HP yang sebenarnya (bar alamat browser naik/turun) dan beri ruang
+       di bawah, supaya menu paling bawah (Log, User, Pengaturan) tidak tertutup & bisa di-scroll. */
+    .sidebar{height:100vh;height:100dvh;padding-bottom:calc(28px + env(safe-area-inset-bottom, 0px));
+      -webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+    .main{margin-left:0;}
+    .topbar{padding:12px 16px;flex-wrap:wrap;gap:8px;left:0;}
+    .topbar .userinfo{font-size:12px;}
+    .content{padding:calc(var(--topbar-h) + 16px) 16px 16px;}
+    h1.page-title{font-size:17px;}
+    .cards{grid-template-columns:repeat(2,1fr);gap:10px;}
+    .card{padding:14px;}
+    .card .value{font-size:20px;}
+    .toolbar{flex-direction:column;align-items:stretch;}
+    .toolbar .actions{justify-content:stretch;}
+    .toolbar .actions .btn{flex:1;}
+    .filter-bar{grid-template-columns:1fr 1fr;}
+    .row2,.row3{grid-template-columns:1fr;}
+    .modal{width:92vw;padding:18px;}
+    .modal.modal-detail{width:92vw;}
+    .settings-form{padding:16px;}
+    .login-box{width:88vw;padding:30px 22px;}
+    table{font-size:12px;}
+    thead th,tbody td{padding:8px;}
+    .app-footer{padding:14px 10px;font-size:11px;}
+  }
+  @media (max-width:420px){
+    .cards{grid-template-columns:1fr;}
+    .filter-bar{grid-template-columns:1fr;}
+  }
+
+  /* ================= LOGIN: PANEL FITUR INTERAKTIF ================= */
+  .login-wrap{display:flex;align-items:center;gap:36px;width:100%;max-width:1000px;margin:auto;}
+  .login-showcase{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:14px;color:#e5e7ff;}
+  .login-wrap .login-box{flex:0 0 auto;}
+  .sc-head h2{margin:0 0 4px;font-size:27px;font-weight:800;color:#fff;letter-spacing:.2px;}
+  .sc-head p{margin:0;font-size:13.5px;color:#b9c0ea;line-height:1.5;}
+  .sc-tabs{display:flex;flex-wrap:wrap;gap:8px;}
+  .sc-tab{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);color:#dfe3ff;
+    border-radius:999px;padding:7px 13px;font-weight:600;font-size:12.5px;line-height:1;font-family:inherit;cursor:pointer;
+    white-space:nowrap;transition:.15s ease;}
+  .sc-tab:hover{background:rgba(255,255,255,.18);}
+  .sc-tab.active{background:#fff;color:var(--primary-dark);border-color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.2);}
+  .sc-panel{background:rgba(255,255,255,.97);color:var(--text);border-radius:16px;padding:16px;
+    box-shadow:0 20px 46px -14px rgba(10,10,50,.5);animation:scIn .3s ease;}
+  @keyframes scIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .sc-preview{position:relative;background:var(--bg);border:1px solid var(--border);border-radius:12px;
+    padding:24px 12px 12px;min-height:150px;overflow:hidden;}
+  .sc-tag{position:absolute;top:7px;right:10px;font-size:9.5px;font-weight:700;letter-spacing:.4px;
+    color:var(--muted);text-transform:uppercase;}
+  .sc-title{display:flex;align-items:center;gap:8px;margin:12px 0 4px;font-size:15.5px;font-weight:800;}
+  .sc-desc{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.5;}
+  .sc-points{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;}
+  .sc-points li{font-size:12.5px;padding-left:20px;position:relative;line-height:1.4;}
+  .sc-points li::before{content:'✓';position:absolute;left:0;top:0;color:var(--success);font-weight:800;}
+  .sc-progress{height:3px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden;}
+  .sc-progress i{display:block;height:100%;width:0;background:#fff;}
+  .sc-progress.run i{animation:scBar 6s linear forwards;}
+  @keyframes scBar{to{width:100%;}}
+
+  /* elemen contoh tampilan (mock) */
+  .sc-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
+  .sc-stat{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 10px;}
+  .sc-stat small{display:block;font-size:10px;color:var(--muted);font-weight:600;}
+  .sc-stat b{font-size:18px;font-weight:800;}
+  .sc-row{display:flex;align-items:center;gap:14px;}
+  .sc-donut{width:78px;height:78px;border-radius:50%;flex:0 0 auto;position:relative;
+    background:conic-gradient(#16a34a 0 68%,#f59e0b 68% 88%,#ef4444 88% 100%);}
+  .sc-donut::after{content:'';position:absolute;inset:18px;background:var(--bg);border-radius:50%;}
+  .sc-legend{font-size:11.5px;line-height:1.8;color:var(--text);}
+  .sc-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;}
+  .sc-mini{width:100%;border-collapse:collapse;background:#fff;font-size:11px;border-radius:8px;overflow:hidden;}
+  .sc-mini th{background:var(--primary-light);color:var(--primary-dark);text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;}
+  .sc-mini td{padding:6px 8px;border-top:1px solid var(--border);white-space:nowrap;}
+  .sc-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+  .sc-chip{background:#fff;border:1px solid var(--border);border-radius:8px;padding:4px 9px;font-size:10.5px;color:var(--muted);font-weight:600;}
+  .sc-chip.on{background:var(--primary);border-color:var(--primary);color:#fff;}
+  .sc-labels{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .sc-label{background:#fff;border:1px dashed #9aa3c7;border-radius:8px;padding:8px;display:flex;gap:8px;align-items:center;}
+  .sc-label .lg{width:34px;height:34px;border-radius:8px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 auto;}
+  .sc-label b{display:block;font-size:12px;} .sc-label span{font-size:10.5px;color:var(--muted);display:block;}
+  .sc-log{background:#fff;border:1px solid var(--border);border-radius:8px;}
+  .sc-log div{display:flex;gap:8px;align-items:center;padding:7px 10px;font-size:11.5px;border-top:1px solid var(--border);}
+  .sc-log div:first-child{border-top:none;}
+  .sc-log em{font-style:normal;color:var(--muted);font-size:10.5px;margin-left:auto;white-space:nowrap;}
+  .sc-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex:0 0 auto;}
+
+  @media (max-width:860px){
+    .login-wrap{flex-direction:column;gap:22px;}
+    .login-wrap .login-box{order:-1;}
+    .login-showcase{width:100%;max-width:520px;}
+    .sc-tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .sc-tabs::-webkit-scrollbar{display:none;}
+    .sc-head h2{font-size:21px;}
+  }
+  @media (max-width:480px){
+    .sc-points{grid-template-columns:1fr;}
+    .sc-cards{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (prefers-reduced-motion:reduce){ .sc-panel{animation:none;} .sc-progress{display:none;} }
+
+  /* ================= TABEL BUKU INVENTARIS / ASET: MUAT TANPA SCROLL HORIZONTAL =================
+     Desktop: teks boleh turun baris (tidak lagi nowrap) & padding dirapatkan sehingga 12 kolom muat.
+     Layar <= 1100px (tablet/HP): tiap baris berubah menjadi kartu (label: isi) agar tetap terbaca
+     tanpa perlu geser ke samping. */
+  .table-wrap.book{overflow-x:hidden;}
+  .tbl-book{font-size:12.5px;table-layout:auto;}
+  .tbl-book thead th{padding:9px 6px;font-size:10.5px;white-space:normal;line-height:1.25;}
+  .tbl-book tbody td{padding:8px 6px;white-space:normal;overflow-wrap:break-word;line-height:1.35;}
+  .tbl-book .label-select-col{width:30px;padding-left:8px;padding-right:2px;}
+  .tbl-book .thumb{width:38px;height:38px;}
+  .tbl-book .badge{display:inline-block;padding:3px 8px;font-size:10.5px;line-height:1.3;}
+  .tbl-book td.c-aksi{white-space:nowrap;}
+  .tbl-book td.c-aksi .btn-sm{padding:5px 8px;font-size:11.5px;}
+  @media (min-width:1101px){
+    .tbl-book tbody td[data-label="Kode"]{white-space:nowrap;}
+    .tbl-book thead th:last-child,.tbl-book tbody td:last-child{padding-right:12px;}
+  }
+  @media (max-width:1100px){
+    .table-wrap.book{background:transparent;border:none;box-shadow:none;overflow:visible;}
+    .tbl-book,.tbl-book tbody,.tbl-book tr,.tbl-book td{display:block;width:100%;}
+    .tbl-book{background:transparent;}
+    .tbl-book thead{display:none;}
+    .tbl-book tbody tr{position:relative;background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+      box-shadow:var(--shadow-sm);margin:0 0 12px;padding:10px 14px 12px;}
+    .tbl-book tbody tr:hover{background:#fff;}
+    .tbl-book tbody td{border:none;padding:5px 0;display:flex;gap:12px;align-items:center;white-space:normal;}
+    .tbl-book tbody td[data-label]::before{content:attr(data-label);flex:0 0 36%;max-width:140px;font-size:10.5px;
+      font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+    .tbl-book tbody td.label-select-col{position:absolute;top:8px;right:8px;width:auto;padding:4px;}
+    .tbl-book tbody td.c-nama{font-weight:700;}
+    .tbl-book tbody td.c-aksi{padding-top:10px;margin-top:4px;border-top:1px solid var(--border);}
+    .tbl-book .thumb{width:56px;height:56px;}
+    .tbl-book tbody td .empty,.tbl-book tbody td.empty,.tbl-book tbody td.loading{display:block;}
+  }
+</style>
 </head>
 <body>
-    <script>
-        const URL_PARAMETER = window.location.search;
 
-        // ⚠️ GANTI DENGAN LINK EXEC APPS SCRIPT APLIKASI INVENTARIS INI
-        // (setelah dibuat di Full Gas / GAS Builder, lalu Deploy > Manage deployments)
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6CP8ZkXVpYuqKLewL7ju6YnF8LaWcioBvU62AMgGLbubECt_oO5nMNkV1l7z9g0tyuQ/exec";
+<!-- ================= LOGIN SCREEN ================= -->
+<div id="loginScreen">
+  <div class="login-wrap">
+  <div class="login-showcase" id="loginShowcase">
+    <div class="sc-head">
+      <h2>Kelola inventaris &amp; aset sekolah, lebih mudah.</h2>
+      <p>Catat barang, pantau kondisinya, dan cetak laporan atau label dalam satu aplikasi. Pilih menu di bawah untuk melihat fungsinya.</p>
+    </div>
+    <div class="sc-tabs" id="scTabs" role="tablist"></div>
+    <div class="sc-panel" id="scPanel"></div>
+    <div class="sc-progress" id="scProgress"><i></i></div>
+  </div>
+  <div class="login-box">
+    <h1>E-Inventaris</h1>
+    <p>Silakan masuk untuk melanjutkan</p>
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="loginUsername" placeholder="Masukkan username" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="password-wrap">
+        <input type="password" id="loginPassword" placeholder="Masukkan password" onkeydown="if(event.key==='Enter')doLogin()">
+        <button type="button" class="password-toggle" id="loginPasswordToggle" onclick="togglePasswordVisibility('loginPassword', this)" aria-label="Tampilkan/sembunyikan password">👁</button>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="doLogin()">Masuk</button>
+    <div id="errorMsg"></div>
+  </div>
+  </div>
+</div>
 
-        const LINK_AKHIR = GOOGLE_SCRIPT_URL + URL_PARAMETER;
+<!-- ================= MAIN APP ================= -->
+<div id="app">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <div class="sidebar" id="sidebar">
+    <div class="brand">
+      <img id="sidebarLogo" src="" style="display:none;">
+      <div>
+        <h2>Buku Inventaris</h2>
+        <small id="sidebarSekolah"></small>
+      </div>
+    </div>
+    <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')"><span class="ic">🏠</span><span>Dashboard</span></div>
+    <div class="nav-item" data-page="inventaris" onclick="navigate('inventaris')"><span class="ic">📋</span><span>Buku Inventaris</span></div>
+    <div class="nav-item" data-page="aset" onclick="navigate('aset')"><span class="ic">🗂️</span><span>Buku Aset</span></div>
+    <div class="nav-item" data-page="labelcetak" onclick="navigate('labelcetak')"><span class="ic">🏷️</span><span>Cetak Label</span></div>
+    <div class="nav-item" data-page="log" onclick="navigate('log')"><span class="ic">🕒</span><span>Log Aktivitas</span></div>
+    <div class="nav-item admin-only" data-page="user" onclick="navigate('user')"><span class="ic">👤</span><span>User</span></div>
+    <div class="nav-item admin-only" data-page="pengaturan" onclick="navigate('pengaturan')"><span class="ic">⚙️</span><span>Pengaturan</span></div>
+  </div>
 
-        document.write('<iframe id="app-frame" src="' + LINK_AKHIR + '" allow="clipboard-read; clipboard-write; geolocation *"></iframe>');
-    </script>
+  <div class="main">
+    <div class="topbar" id="appTopbar">
+      <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+        <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+        <div id="pageHeading" style="font-weight:600;">Dashboard</div>
+      </div>
+      <div class="userinfo">
+        <b id="topUserName"></b> &middot; <span id="topUserRole"></span>
+        &nbsp;&nbsp;<button class="btn btn-outline btn-sm" onclick="doLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <h1 class="page-title">Dashboard</h1>
+        <div class="cards">
+          <div class="card total"><div class="label">Total Barang</div><div class="value" id="dashTotal">-</div></div>
+          <div class="card baik"><div class="label">Kondisi Baik</div><div class="value" id="dashBaik">-</div></div>
+          <div class="card ringan"><div class="label">Rusak Ringan</div><div class="value" id="dashRingan">-</div></div>
+          <div class="card berat"><div class="label">Rusak Berat</div><div class="value" id="dashBerat">-</div></div>
+        </div>
+        <div class="chart-box">
+          <div style="font-weight:600;margin-bottom:10px;">Statistik Kondisi Barang</div>
+          <div id="chartKondisi"></div>
+        </div>
+      </div>
+
+      <!-- INVENTARIS -->
+      <div class="page" id="page-inventaris">
+        <h1 class="page-title">Buku Inventaris</h1>
+        <div class="toolbar">
+          <button class="btn btn-primary" onclick="openInventarisModal()">+ Tambah Barang</button>
+          <div class="actions">
+            <button class="btn btn-outline" onclick="downloadTemplateExcel()">⬇ Template Excel</button>
+            <button class="btn btn-outline" onclick="triggerImportExcel()">⬆ Impor Excel</button>
+            <input type="file" id="importExcelInput" accept=".xlsx" style="display:none;" onchange="handleImportExcelFile(event)">
+            <button class="btn btn-outline" onclick="exportExcel()">⬇ Excel</button>
+            <button class="btn btn-outline" onclick="exportPDF()">⬇ PDF</button>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin:-4px 0 10px;">
+          Centang barang pada tabel untuk memilih data yang akan diekspor (Excel/PDF). Centang kotak di kepala kolom untuk memilih semua.
+        </div>
+        <div class="filter-bar">
+          <div class="field"><label>Tahun</label>
+            <select id="filterTahun" onchange="applyInventarisFilter()"><option value="">Semua</option></select>
+          </div>
+          <div class="field"><label>Bulan</label>
+            <select id="filterBulan" onchange="applyInventarisFilter()"><option value="">Semua</option></select>
+          </div>
+          <div class="field"><label>Asal/Perolehan</label>
+            <select id="filterAsal" onchange="applyInventarisFilter()"><option value="">Semua</option></select>
+          </div>
+          <div class="field"><label>Lokasi</label>
+            <select id="filterLokasi" onchange="applyInventarisFilter()"><option value="">Semua</option></select>
+          </div>
+          <div class="field"><label>Kondisi</label>
+            <select id="filterKondisi" onchange="applyInventarisFilter()"><option value="">Semua</option></select>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="resetInventarisFilter()">Reset</button>
+        </div>
+        <div class="table-wrap book"><table class="tbl-book">
+          <thead><tr>
+            <th class="label-select-col"><input type="checkbox" id="chkInvAll" onchange="toggleAllInventaris(this)"></th>
+            <th>Foto</th><th>Kode</th><th>Nama Barang</th><th>Kategori</th><th>Tahun</th><th>Bulan</th>
+            <th>Asal/Perolehan</th><th>Lokasi</th><th>Kondisi</th><th>Jumlah</th><th>Aksi</th>
+          </tr></thead>
+          <tbody id="tblInventaris"><tr><td colspan="12" class="loading">Memuat data...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- BUKU ASET -->
+      <div class="page" id="page-aset">
+        <h1 class="page-title">Buku Aset</h1>
+        <div class="toolbar">
+          <button class="btn btn-primary" onclick="openAsetModal()">+ Tambah Aset</button>
+          <div class="actions">
+            <button class="btn btn-outline" onclick="downloadTemplateAset()">⬇ Template Excel</button>
+            <button class="btn btn-outline" onclick="triggerImportAset()">⬆ Impor Excel</button>
+            <input type="file" id="importAsetInput" accept=".xlsx" style="display:none;" onchange="handleImportAsetFile(event)">
+            <button class="btn btn-outline" onclick="exportAsetToExcel()">⬇ Excel</button>
+            <button class="btn btn-outline" onclick="exportAsetToPDF()">⬇ PDF</button>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin:-4px 0 10px;">
+          Centang aset pada tabel untuk memilih data yang akan diekspor (Excel/PDF). Centang kotak di kepala kolom untuk memilih semua.
+        </div>
+        <div class="filter-bar">
+          <div class="field"><label>Tahun</label>
+            <select id="asetFilterTahun" onchange="applyAsetFilter()"><option value="">Semua</option></select>
+          </div>
+          <div class="field"><label>Bulan</label>
+            <select id="asetFilterBulan" onchange="applyAsetFilter()"><option value="">Semua</option></select>
+          </div>
+          <div class="field"><label>Asal/Perolehan</label>
+            <select id="asetFilterAsal" onchange="applyAsetFilter()"><option value="">Semua</option></select>
+          </div>
+          <div class="field"><label>Lokasi</label>
+            <select id="asetFilterLokasi" onchange="applyAsetFilter()"><option value="">Semua</option></select>
+          </div>
+          <div class="field"><label>Kondisi</label>
+            <select id="asetFilterKondisi" onchange="applyAsetFilter()"><option value="">Semua</option></select>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="resetAsetFilter()">Reset</button>
+        </div>
+        <div class="table-wrap book"><table class="tbl-book">
+          <thead><tr>
+            <th class="label-select-col"><input type="checkbox" id="chkAsetAll" onchange="toggleAllAset(this)"></th>
+            <th>Foto</th><th>Kode</th><th>Nama Barang</th><th>Kategori</th><th>Tahun</th><th>Bulan</th>
+            <th>Asal/Perolehan</th><th>Lokasi</th><th>Kondisi</th><th>Jumlah</th><th>Aksi</th>
+          </tr></thead>
+          <tbody id="tblAset"><tr><td colspan="12" class="loading">Memuat data...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- CETAK LABEL -->
+      <div class="page" id="page-labelcetak">
+        <h1 class="page-title">Cetak Label Barang</h1>
+        <div class="toolbar">
+          <div style="font-size:13px;color:var(--muted);">
+            Centang barang yang labelnya ingin dicetak, lalu klik "Cetak Label Terpilih".<br>
+            Ukuran cetak: kertas A4, 2 label per baris (12 label per lembar).
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" onclick="printLabelBarang()">🖨️ Cetak Label Terpilih</button>
+          </div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th class="label-select-col"><input type="checkbox" id="chkLabelAll" onchange="toggleAllLabel(this)"></th>
+            <th>Kode</th><th>Nama Barang</th><th>Kategori</th><th>Tahun</th><th>Bulan</th>
+            <th>Asal/Perolehan</th><th>Lokasi</th>
+          </tr></thead>
+          <tbody id="tblLabel"><tr><td colspan="8" class="loading">Memuat data...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- LOG AKTIVITAS -->
+      <div class="page" id="page-log">
+        <h1 class="page-title">Log Aktivitas</h1>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Waktu</th><th>User</th><th>Aktivitas</th><th>Keterangan</th></tr></thead>
+          <tbody id="tblLog"><tr><td colspan="4" class="loading">Memuat data...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- USER -->
+      <div class="page" id="page-user">
+        <h1 class="page-title">User</h1>
+        <div class="toolbar">
+          <button class="btn btn-primary" onclick="openUserModal()">+ Tambah User</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Username</th><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead>
+          <tbody id="tblUser"><tr><td colspan="4" class="loading">Memuat data...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- PENGATURAN -->
+      <div class="page" id="page-pengaturan">
+        <h1 class="page-title">Pengaturan</h1>
+        <div class="settings-form" id="formPengaturan">
+          <div class="loading">Memuat pengaturan...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="app-footer" id="appFooter">Copyright &copy; 2026 - SMP Islam Terpadu Al Mubarok</div>
+  </div>
+</div>
+
+<!-- MODAL INVENTARIS -->
+<div class="modal-overlay" id="modalInventaris">
+  <div class="modal">
+    <h2 id="modalInventarisTitle">Tambah Barang</h2>
+    <input type="hidden" id="invRow">
+    <div class="row2">
+      <div class="field"><label>Kode Barang</label><input type="text" id="invKode"></div>
+      <div class="field"><label>Nama Barang</label><input type="text" id="invNama"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Tahun</label><input type="number" id="invTahun" placeholder="2026"></div>
+      <div class="field"><label>Bulan</label>
+        <select id="invBulan">
+          <option value="">-</option>
+          <option>Januari</option><option>Februari</option><option>Maret</option><option>April</option>
+          <option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option>
+          <option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Asal/Perolehan</label><input type="text" id="invAsal" placeholder="Pembelian / Bantuan / Hibah / dll"></div>
+    <div class="row2">
+      <div class="field"><label>Kategori</label><input type="text" id="invKategori"></div>
+      <div class="field"><label>Lokasi</label><input type="text" id="invLokasi"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Kondisi</label>
+        <select id="invKondisi">
+          <option>Baik</option><option>Rusak Ringan</option><option>Rusak Berat</option>
+        </select>
+      </div>
+      <div class="field"><label>Jumlah</label><input type="number" id="invJumlah"></div>
+    </div>
+    <div class="field"><label>Foto Barang</label>
+      <input type="file" id="invFoto" accept="image/*" capture="environment">
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">Di HP, ketuk untuk memilih ambil foto langsung dari kamera atau dari galeri.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalInventaris')">Batal</button>
+      <button class="btn btn-primary" onclick="saveInventaris()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ASET -->
+<div class="modal-overlay" id="modalAset">
+  <div class="modal">
+    <h2 id="modalAsetTitle">Tambah Aset</h2>
+    <input type="hidden" id="asetRow">
+    <div class="row2">
+      <div class="field"><label>Kode Barang</label><input type="text" id="asetKode"></div>
+      <div class="field"><label>Nama Barang</label><input type="text" id="asetNama"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Tahun</label><input type="number" id="asetTahun" placeholder="2026"></div>
+      <div class="field"><label>Bulan</label>
+        <select id="asetBulan">
+          <option value="">-</option>
+          <option>Januari</option><option>Februari</option><option>Maret</option><option>April</option>
+          <option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option>
+          <option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Asal/Perolehan</label><input type="text" id="asetAsal" placeholder="Pembelian / Bantuan / Hibah / dll"></div>
+    <div class="row2">
+      <div class="field"><label>Kategori</label><input type="text" id="asetKategori"></div>
+      <div class="field"><label>Lokasi</label><input type="text" id="asetLokasi"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Kondisi</label>
+        <select id="asetKondisi">
+          <option>Baik</option><option>Rusak Ringan</option><option>Rusak Berat</option>
+        </select>
+      </div>
+      <div class="field"><label>Jumlah</label><input type="number" id="asetJumlah"></div>
+    </div>
+    <div class="field"><label>Foto Aset</label>
+      <input type="file" id="asetFoto" accept="image/*" capture="environment">
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">Di HP, ketuk untuk memilih ambil foto langsung dari kamera atau dari galeri.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalAset')">Batal</button>
+      <button class="btn btn-primary" onclick="saveAset()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL USER -->
+<div class="modal-overlay" id="modalUser">
+  <div class="modal">
+    <h2 id="modalUserTitle">Tambah User</h2>
+    <input type="hidden" id="usrOriginalUsername">
+    <div class="field"><label>Username</label><input type="text" id="usrUsername"></div>
+    <div class="field"><label>Nama</label><input type="text" id="usrNama"></div>
+    <div class="field"><label>Password <span id="usrPwHint" style="font-weight:400;color:var(--muted);"></span></label><input type="password" id="usrPassword"></div>
+    <div class="field"><label>Role</label><select id="usrRole"><option>Admin</option><option>User</option></select></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalUser')">Batal</button>
+      <button class="btn btn-primary" onclick="saveUser()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETAIL BARANG -->
+<div class="modal-overlay" id="modalDetail">
+  <div class="modal modal-detail">
+    <h2 id="detailTitle">Detail Barang</h2>
+    <img class="detail-photo" id="detailFoto" src="" alt="Foto Barang">
+    <div class="detail-grid" id="detailGrid"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalDetail')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETAIL ASET -->
+<div class="modal-overlay" id="modalAsetDetail">
+  <div class="modal modal-detail">
+    <h2 id="asetDetailTitle">Detail Aset</h2>
+    <img class="detail-photo" id="asetDetailFoto" src="" alt="Foto Aset">
+    <div class="detail-grid" id="asetDetailGrid"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalAsetDetail')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- OVERLAY LOADING GLOBAL: muncul otomatis di proses apapun yang memanggil server -->
+<div class="global-loading" id="globalLoading">
+  <div class="spinner"></div>
+  <div class="loading-text" id="globalLoadingText">Memuat data...</div>
+</div>
+
+<script>
+  /* ============================================================
+     KONFIGURASI API (backend Google Apps Script)
+     ============================================================ */
+  // 1) Tempel URL Web App Apps Script Anda di sini (berakhiran /exec)
+  var API_URL = 'https://script.google.com/macros/s/AKfycbw6CP8ZkXVpYuqKLewL7ju6YnF8LaWcioBvU62AMgGLbubECt_oO5nMNkV1l7z9g0tyuQ/exec';
+
+  // 2) Judul tab browser (juga bisa diubah di tag <title> di atas)
+  var APP_TITLE = 'E-Inventaris';
+  document.title = APP_TITLE;
+
+  /* ============================================================
+     API CLIENT: pengganti google.script.run memakai fetch()
+     Pemakaian sama seperti sebelumnya:
+       API.run.withSuccessHandler(fnOk).withFailureHandler(fnErr).namaFungsi(arg1, arg2)
+     ============================================================ */
+  var API = (function () {
+    function call(fn, args) {
+      // Body string tanpa header kustom = "simple request", jadi tidak kena preflight CORS
+      return fetch(API_URL, {
+        method: 'POST',
+        redirect: 'follow',
+        body: JSON.stringify({ fn: fn, args: args })
+      }).then(function (r) {
+        if (!r.ok) throw new Error('Server mengembalikan status ' + r.status);
+        return r.json();
+      }).then(function (res) {
+        if (!res || res.ok !== true) {
+          if (res && res.code === 'AUTH') {
+            try { sessionStorage.removeItem('einv_token'); sessionStorage.removeItem('einv_user'); } catch (e) {}
+            alert('Sesi berakhir, silakan login ulang.');
+            location.reload();
+          }
+          throw new Error((res && res.error) || 'Terjadi kesalahan pada server.');
+        }
+        return res.data;
+      }).catch(function (err) {
+        if (err instanceof TypeError) err = new Error('Tidak dapat terhubung ke server. Periksa koneksi internet / URL API.');
+        throw err;
+      });
+    }
+
+    function runner(onOk, onFail) {
+      return new Proxy({}, {
+        get: function (_, name) {
+          if (name === 'withSuccessHandler') return function (f) { return runner(f, onFail); };
+          if (name === 'withFailureHandler') return function (f) { return runner(onOk, f); };
+          if (typeof name !== 'string') return undefined;
+          return function () {
+            var args = Array.prototype.slice.call(arguments);
+            call(name, args).then(
+              function (data) { if (onOk) onOk(data); },
+              function (err) { if (onFail) onFail(err); else console.error(name, err); }
+            );
+          };
+        }
+      });
+    }
+
+    return { call: call, run: runner(null, null) };
+  })();
+</script>
+<script>
+  var TOKEN = null;
+  var CURRENT_USER = null;
+  var PENGATURAN_CACHE = {}; // dipakai ulang untuk logo/nama sekolah saat cetak label
+  var invFotoBase64 = null, invFotoName = null, invFotoMime = null;
+  var asetFotoBase64 = null, asetFotoName = null, asetFotoMime = null;
+  var logoBase64 = null, logoName = null, logoMime = null;
+  var kopBase64 = null, kopName = null, kopMime = null;
+
+  /* ---------- PANEL FITUR DI HALAMAN LOGIN ----------
+     Contoh tampilan di bawah murni ilustrasi statis (bukan data asli), jadi aman ditampilkan
+     sebelum login. Otomatis berganti tiap 6 detik; berhenti sejenak saat pengguna memilih sendiri. */
+  var SC_FEATURES = [
+    { id:'dash', icon:'🏠', tab:'Dashboard', title:'Dashboard',
+      desc:'Ringkasan kondisi seluruh barang dalam sekali lihat, lengkap dengan grafik.',
+      points:['Total barang & kondisinya','Grafik statistik kondisi','Data selalu terbaru','Tampil rapi di HP'],
+      preview:'<div class="sc-cards">'+
+        '<div class="sc-stat"><small>Total Barang</small><b style="color:var(--primary)">248</b></div>'+
+        '<div class="sc-stat"><small>Kondisi Baik</small><b style="color:var(--success)">170</b></div>'+
+        '<div class="sc-stat"><small>Rusak Ringan</small><b style="color:var(--warning)">52</b></div>'+
+        '<div class="sc-stat"><small>Rusak Berat</small><b style="color:var(--danger)">26</b></div></div>'+
+        '<div class="sc-row"><div class="sc-donut"></div><div class="sc-legend">'+
+        '<div><i style="background:#16a34a"></i>Baik</div><div><i style="background:#f59e0b"></i>Rusak Ringan</div>'+
+        '<div><i style="background:#ef4444"></i>Rusak Berat</div></div></div>' },
+    { id:'inv', icon:'📋', tab:'Buku Inventaris', title:'Buku Inventaris',
+      desc:'Buku induk seluruh barang sekolah: kode, kategori, lokasi, kondisi, jumlah, dan foto.',
+      points:['Tambah, ubah, hapus data','Foto langsung dari kamera HP','Filter tahun, bulan, lokasi, kondisi','Impor & ekspor Excel / PDF'],
+      preview:'<div class="sc-chips"><span class="sc-chip on">Semua</span><span class="sc-chip">2025</span><span class="sc-chip">Ruang Kelas 1</span><span class="sc-chip">Baik</span></div>'+
+        '<table class="sc-mini"><tr><th>Kode</th><th>Nama Barang</th><th>Lokasi</th><th>Kondisi</th></tr>'+
+        '<tr><td>BRG-001</td><td>Kursi Kayu</td><td>Kelas 1</td><td><span class="badge baik">Baik</span></td></tr>'+
+        '<tr><td>BRG-002</td><td>Proyektor</td><td>Lab</td><td><span class="badge ringan">Rusak Ringan</span></td></tr>'+
+        '<tr><td>BRG-003</td><td>Papan Tulis</td><td>Kelas 2</td><td><span class="badge baik">Baik</span></td></tr></table>' },
+    { id:'aset', icon:'🗂️', tab:'Buku Aset', title:'Buku Aset',
+      desc:'Buku terpisah untuk mencatat aset sekolah dengan fitur yang sama seperti Buku Inventaris.',
+      points:['Data tersimpan terpisah','Fitur sama persis','Ekspor Excel & PDF berkop','Impor massal dari Excel'],
+      preview:'<div class="sc-chips"><span class="sc-chip on">Semua</span><span class="sc-chip">Hibah</span><span class="sc-chip">Pembelian</span></div>'+
+        '<table class="sc-mini"><tr><th>Kode</th><th>Nama Aset</th><th>Asal</th><th>Jumlah</th></tr>'+
+        '<tr><td>AST-001</td><td>Laptop</td><td>Hibah</td><td>12</td></tr>'+
+        '<tr><td>AST-002</td><td>AC Split</td><td>Pembelian</td><td>6</td></tr>'+
+        '<tr><td>AST-003</td><td>Printer</td><td>Bantuan</td><td>3</td></tr></table>' },
+    { id:'label', icon:'🏷️', tab:'Cetak Label', title:'Cetak Label Barang',
+      desc:'Cetak label barang berlogo sekolah langsung dari browser, siap tempel pada barang.',
+      points:['Pilih barang yang dicetak','Kertas A4, 12 label/lembar','Memuat logo & nama sekolah','Tanpa aplikasi tambahan'],
+      preview:'<div class="sc-labels">'+
+        '<div class="sc-label"><div class="lg">🏫</div><div><b>BRG-001</b><span>Kursi Kayu</span><span>Januari 2025</span></div></div>'+
+        '<div class="sc-label"><div class="lg">🏫</div><div><b>BRG-002</b><span>Proyektor</span><span>Maret 2025</span></div></div>'+
+        '<div class="sc-label"><div class="lg">🏫</div><div><b>BRG-003</b><span>Papan Tulis</span><span>Juli 2024</span></div></div>'+
+        '<div class="sc-label"><div class="lg">🏫</div><div><b>BRG-004</b><span>Lemari Arsip</span><span>Mei 2024</span></div></div></div>' },
+    { id:'log', icon:'🕒', tab:'Log Aktivitas', title:'Log Aktivitas',
+      desc:'Setiap perubahan data tercatat otomatis: siapa melakukan apa dan kapan.',
+      points:['Riwayat login & logout','Catatan tambah/ubah/hapus','Terurut dari yang terbaru','Memudahkan penelusuran'],
+      preview:'<div class="sc-log">'+
+        '<div><span class="sc-dot"></span>Tambah Barang: Kursi Kayu<em>10:42</em></div>'+
+        '<div><span class="sc-dot" style="background:#f59e0b"></span>Ubah data: Proyektor<em>10:15</em></div>'+
+        '<div><span class="sc-dot" style="background:#ef4444"></span>Hapus aset pada baris 14<em>09:50</em></div>'+
+        '<div><span class="sc-dot" style="background:#16a34a"></span>Login ke sistem<em>08:03</em></div></div>' },
+    { id:'admin', icon:'⚙️', tab:'User & Pengaturan', title:'User & Pengaturan (Admin)',
+      desc:'Admin mengatur akun pengguna dan identitas sekolah yang dipakai di seluruh aplikasi.',
+      points:['Peran Admin dan User','Password tersimpan terenkripsi','Logo & kop surat sekolah','Nama, alamat, dan kontak'],
+      preview:'<table class="sc-mini"><tr><th>Username</th><th>Nama</th><th>Role</th></tr>'+
+        '<tr><td>admin</td><td>Administrator</td><td><span class="badge admin">Admin</span></td></tr>'+
+        '<tr><td>guru01</td><td>Petugas Sarpras</td><td><span class="badge userrole">User</span></td></tr></table>'+
+        '<div class="sc-chips" style="margin:10px 0 0"><span class="sc-chip">🖼️ Logo sekolah</span><span class="sc-chip">📄 Kop surat</span><span class="sc-chip">📍 Alamat</span></div>' }
+  ];
+  var scIndex = 0, scTimer = null, scResumeTimer = null;
+
+  function renderShowcase(){
+    var tabs = document.getElementById('scTabs');
+    if(!tabs) return;
+    tabs.innerHTML = SC_FEATURES.map(function(f,i){
+      return '<button type="button" class="sc-tab" role="tab" data-i="'+i+'" onclick="selectShowcase('+i+', true)">'+f.icon+' '+f.tab+'</button>';
+    }).join('');
+    selectShowcase(0, false);
+  }
+
+  function selectShowcase(i, byUser){
+    scIndex = i;
+    var f = SC_FEATURES[i];
+    document.querySelectorAll('#scTabs .sc-tab').forEach(function(el, idx){
+      var on = idx === i;
+      el.classList.toggle('active', on);
+      el.setAttribute('aria-selected', on ? 'true' : 'false');
+      if(on && byUser){ try{ el.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'}); }catch(e){} }
+    });
+    var panel = document.getElementById('scPanel');
+    panel.style.animation = 'none'; void panel.offsetWidth; panel.style.animation = '';
+    panel.innerHTML =
+      '<div class="sc-preview"><span class="sc-tag">Contoh tampilan</span>'+f.preview+'</div>'+
+      '<div class="sc-title"><span>'+f.icon+'</span><span>'+f.title+'</span></div>'+
+      '<p class="sc-desc">'+f.desc+'</p>'+
+      '<ul class="sc-points">'+f.points.map(function(p){ return '<li>'+p+'</li>'; }).join('')+'</ul>';
+    startShowcaseTimer(byUser);
+  }
+
+  // Auto-ganti tiap 6 detik. Kalau pengguna memilih sendiri, jeda dulu 12 detik baru lanjut.
+  function startShowcaseTimer(byUser){
+    clearInterval(scTimer); clearTimeout(scResumeTimer);
+    var bar = document.getElementById('scProgress');
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var begin = function(){
+      if(bar){ bar.classList.remove('run'); void bar.offsetWidth; bar.classList.add('run'); }
+      scTimer = setInterval(function(){
+        var loginVisible = document.getElementById('loginScreen').style.display !== 'none';
+        if(!loginVisible) return;
+        selectShowcase((scIndex + 1) % SC_FEATURES.length, false);
+      }, 6000);
+    };
+    if(byUser){
+      if(bar) bar.classList.remove('run');
+      scResumeTimer = setTimeout(begin, 12000);
+    } else { begin(); }
+  }
+  renderShowcase();
+
+  /* ---------- LOGIN / LOGOUT ---------- */
+  function togglePasswordVisibility(inputId, btn){
+    var input = document.getElementById(inputId);
+    var showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    btn.innerText = showing ? '👁' : '🙈';
+  }
+
+  function doLogin(){
+    var u = document.getElementById('loginUsername').value.trim();
+    var p = document.getElementById('loginPassword').value;
+    document.getElementById('errorMsg').innerText = '';
+    if(!u || !p){ document.getElementById('errorMsg').innerText = 'Username & password wajib diisi'; return; }
+    showLoading('Memproses login...');
+    API.run.withSuccessHandler(function(res){
+      hideLoading();
+      if(res.success){
+        TOKEN = res.token;
+        CURRENT_USER = res;
+        sessionStorage.setItem('einv_token', TOKEN);
+        sessionStorage.setItem('einv_user', JSON.stringify(res));
+        enterApp();
+      } else {
+        document.getElementById('errorMsg').innerText = res.message || 'Login gagal';
+      }
+    }).withFailureHandler(showErrorAndHide).login(u, p);
+  }
+
+  function doLogout(){
+    API.run.logout(TOKEN);
+    sessionStorage.removeItem('einv_token');
+    sessionStorage.removeItem('einv_user');
+    TOKEN = null; CURRENT_USER = null;
+    resetUiState();
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('loginUsername').value='';
+    document.getElementById('loginPassword').value='';
+    document.getElementById('loginPassword').type='password';
+    document.getElementById('loginPasswordToggle').innerText='👁';
+  }
+
+  function enterApp(){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('topUserName').innerText = CURRENT_USER.nama || CURRENT_USER.username;
+    document.getElementById('topUserRole').innerText = CURRENT_USER.role;
+    document.querySelectorAll('.admin-only').forEach(function(el){
+      el.style.display = (CURRENT_USER.role === 'Admin') ? 'flex' : 'none';
+    });
+    loadBrand();
+    initHistory();
+    navigate('dashboard');
+    syncFixedBarsHeight();
+  }
+
+  /* ---------- SINKRON TINGGI HEADER/FOOTER (fixed) ----------
+     Header (.topbar) dan footer (.app-footer) dibuat position:fixed supaya SELALU terlihat
+     dan tidak ikut ter-scroll bersama konten. Karena tingginya bisa berubah (mis. teks di
+     topbar melipat ke baris ke-2 di layar HP sempit, atau nama user panjang), tinggi asli
+     diukur lewat JS lalu disimpan ke CSS variable --topbar-h / --footer-h. Variable ini
+     dipakai .content untuk memberi jarak (padding) yang pas, supaya konten tidak
+     tertutup/ketiban header atau footer.*/
+  function syncFixedBarsHeight(){
+    var topbar = document.getElementById('appTopbar');
+    var footer = document.getElementById('appFooter');
+    if(topbar && topbar.offsetHeight){
+      document.documentElement.style.setProperty('--topbar-h', topbar.offsetHeight + 'px');
+    }
+    if(footer && footer.offsetHeight){
+      document.documentElement.style.setProperty('--footer-h', footer.offsetHeight + 'px');
+    }
+  }
+  window.addEventListener('load', syncFixedBarsHeight);
+  window.addEventListener('resize', syncFixedBarsHeight);
+
+  function loadBrand(){
+    // getPengaturan tidak butuh session valid, jadi ini aman dipanggil sebelum login.
+    // Tidak pakai overlay loading di sini karena berjalan diam-diam di latar belakang.
+    API.run.withSuccessHandler(function(p){
+      PENGATURAN_CACHE = p || {};
+      if(p['nama sekolah']) document.getElementById('sidebarSekolah').innerText = p['nama sekolah'];
+      if(p['logo']){
+        var img = document.getElementById('sidebarLogo');
+        img.src = p['logo']; img.style.display = 'block';
+        var loginLogo = document.querySelector('.login-box');
+        if(loginLogo && !document.getElementById('loginLogoImg')){
+          var im = document.createElement('img');
+          im.id = 'loginLogoImg'; im.className='logo'; im.src = p['logo'];
+          loginLogo.insertBefore(im, loginLogo.firstChild);
+        }
+      }
+    }).withFailureHandler(function(){}).getPengaturan(TOKEN);
+  }
+
+  // Muat logo & nama sekolah segera saat halaman dibuka, supaya tampil di
+  // halaman login SEBELUM user login (bukan hanya setelah login/logout).
+  loadBrand();
+
+  // auto-login jika sesi browser masih ada
+  (function tryRestoreSession(){
+    var t = sessionStorage.getItem('einv_token');
+    var u = sessionStorage.getItem('einv_user');
+    if(t && u){
+      TOKEN = t; CURRENT_USER = JSON.parse(u);
+      enterApp();
+    }
+  })();
+
+  /* ---------- NAVIGASI + TOMBOL BACK (HP) ----------
+     Masalah lama: setiap pindah menu/buka modal TIDAK membuat entri history, sehingga tombol
+     back HP langsung keluar dari aplikasi (atau tidak bereaksi). Sekarang semua "layar" dicatat
+     di uiStack dan setiap layar punya 1 entri history (pushState) yang sinkron dengannya:
+       - tombol back menutup sidebar / modal yang sedang terbuka dulu,
+       - lalu kembali ke menu sebelumnya (urutan sesuai riwayat yang dibuka),
+       - di Dashboard: tekan back 2x berturut-turut (dalam 2 detik) untuk keluar. */
+  var uiStack = [];          // [{type:'page',page} | {type:'layer',name,close}]
+  var currentPage = null;
+  var ignorePop = 0;         // jumlah popstate yang berasal dari history.back() buatan sendiri
+  var ignoreResetTimer = null;
+  var lastBackAt = 0;
+
+  function histState(){ return { einv: true, d: uiStack.length }; }
+  function safeHistory(fn){ try{ fn(); }catch(e){} }
+
+  function initHistory(){
+    uiStack = [{ type:'page', page:'dashboard' }];
+    currentPage = 'dashboard';
+    safeHistory(function(){
+      history.replaceState({ einv:true, d:0 }, '');
+      history.pushState({ einv:true, d:1 }, '');
+    });
+  }
+
+  function resetUiState(){
+    uiStack = []; currentPage = null; ignorePop = 0;
+    hideSidebarUI();
+    document.querySelectorAll('.modal-overlay.show').forEach(function(el){ el.classList.remove('show'); });
+  }
+
+  function pushLayer(name, closeFn){
+    uiStack.push({ type:'layer', name:name, close:closeFn });
+    safeHistory(function(){ history.pushState(histState(), ''); });
+  }
+
+  // Dipanggil saat layer ditutup lewat tombol di layar (bukan lewat back): buang entri history-nya juga.
+  function popLayerByName(name){
+    var top = uiStack[uiStack.length-1];
+    if(!(top && top.type === 'layer' && top.name === name)) return;
+    uiStack.pop();
+    ignorePop++;
+    clearTimeout(ignoreResetTimer);
+    ignoreResetTimer = setTimeout(function(){ ignorePop = 0; }, 800); // jaga-jaga kalau popstate tidak pernah datang
+    safeHistory(function(){ history.back(); });
+  }
+
+  window.addEventListener('popstate', function(e){
+    if(!TOKEN) return;
+    if(ignorePop > 0){ ignorePop--; return; }
+
+    // Tombol FORWARD browser (desktop) diabaikan supaya tidak dianggap sebagai "back".
+    var target = (e.state && typeof e.state.d === 'number') ? e.state.d : null;
+    if(target !== null && target >= uiStack.length) return;
+
+    if(uiStack.length > 1){
+      var top = uiStack.pop();
+      if(top.type === 'layer'){
+        top.close();                         // tutup sidebar / modal
+      } else {
+        var prev = uiStack[uiStack.length-1];
+        if(prev && prev.type === 'page') showPage(prev.page);
+      }
+      return;
+    }
+
+    // Sudah di layar paling awal (Dashboard): minta tekan back sekali lagi untuk keluar.
+    var now = Date.now();
+    if(now - lastBackAt < 2000){
+      lastBackAt = 0;
+      safeHistory(function(){ history.back(); });   // benar-benar keluar
+    } else {
+      lastBackAt = now;
+      safeHistory(function(){ history.pushState(histState(), ''); });
+      showToast('Tekan back sekali lagi untuk keluar');
+    }
+  });
+
+  /* ---------- SIDEBAR MOBILE (hamburger) ---------- */
+  function hideSidebarUI(){
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+    document.body.classList.remove('no-scroll');
+  }
+  function openSidebar(){
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('show');
+    document.body.classList.add('no-scroll');
+    pushLayer('sidebar', hideSidebarUI);
+  }
+  function closeSidebar(){
+    hideSidebarUI();
+    popLayerByName('sidebar');
+  }
+  function toggleSidebar(){
+    if(document.getElementById('sidebar').classList.contains('open')) closeSidebar(); else openSidebar();
+  }
+
+  /* ---------- MODAL (ikut tombol back) ---------- */
+  function openModal(id){
+    var el = document.getElementById(id);
+    if(el.classList.contains('show')) return;
+    el.classList.add('show');
+    pushLayer(id, function(){ el.classList.remove('show'); });
+  }
+  function closeModal(id){
+    document.getElementById(id).classList.remove('show');
+    popLayerByName(id);
+  }
+
+  /* ---------- NAVIGASI ---------- */
+  // showPage = hanya menampilkan halaman (tanpa menyentuh history); dipakai navigate() & tombol back.
+  function showPage(page){
+    currentPage = page;
+    document.querySelectorAll('.nav-item').forEach(function(el){ el.classList.remove('active'); });
+    document.querySelector('.nav-item[data-page="'+page+'"]').classList.add('active');
+    document.querySelectorAll('.page').forEach(function(el){ el.classList.remove('active'); });
+    document.getElementById('page-'+page).classList.add('active');
+    document.getElementById('pageHeading').innerText = document.querySelector('.nav-item[data-page="'+page+'"]').innerText.replace(/\s+/g,' ').trim();
+    window.scrollTo(0, 0);
+
+    if(page === 'dashboard') loadDashboard();
+    if(page === 'inventaris') loadInventarisTable();
+    if(page === 'aset') loadAsetTable();
+    if(page === 'labelcetak') loadLabelTable();
+    if(page === 'log') loadLogTable();
+    if(page === 'user') loadUserTable();
+    if(page === 'pengaturan') loadPengaturan();
+  }
+
+  function navigate(page){
+    var top = uiStack[uiStack.length-1];
+    var fromSidebar = !!(top && top.type === 'layer' && top.name === 'sidebar');
+    if(fromSidebar){ uiStack.pop(); hideSidebarUI(); }   // entri history sidebar akan "dipakai" oleh halaman baru
+
+    if(page === currentPage){
+      showPage(page);
+      if(fromSidebar){                                   // halaman sama: buang entri history sidebar
+        ignorePop++;
+        clearTimeout(ignoreResetTimer);
+        ignoreResetTimer = setTimeout(function(){ ignorePop = 0; }, 800);
+        safeHistory(function(){ history.back(); });
+      }
+      return;
+    }
+
+    uiStack.push({ type:'page', page:page });
+    safeHistory(function(){
+      if(fromSidebar) history.replaceState(histState(), '');
+      else history.pushState(histState(), '');
+    });
+    showPage(page);
+  }
+
+  function showError(err){ showToast('Error: ' + (err.message || err)); }
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    t.innerText = msg; t.style.display = 'block';
+    setTimeout(function(){ t.style.display = 'none'; }, 3000);
+  }
+
+  /* ---------- LOADING OVERLAY (dipakai di semua proses yang butuh ambil/simpan data) ----------
+     Overlay animasi loading SENGAJA tidak langsung muncul begitu proses dimulai. Ia baru
+     ditampilkan kalau proses masih berjalan setelah LOADING_DELAY (2 detik) — supaya proses
+     cepat (di bawah 2 detik) tidak "berkedip" menampilkan animasi loading yang tidak perlu.
+     loadingCounter tetap dipakai untuk mendukung beberapa proses berjalan bersamaan. */
+  var loadingCounter = 0;
+  var loadingTimer = null;
+  var LOADING_DELAY = 2000;
+  function showLoading(text){
+    loadingCounter++;
+    document.getElementById('globalLoadingText').innerText = text || 'Memuat data...';
+    if(loadingCounter === 1){
+      loadingTimer = setTimeout(function(){
+        loadingTimer = null;
+        if(loadingCounter > 0){ document.getElementById('globalLoading').classList.add('show'); }
+      }, LOADING_DELAY);
+    }
+  }
+  function hideLoading(){
+    loadingCounter = Math.max(0, loadingCounter - 1);
+    if(loadingCounter === 0){
+      if(loadingTimer){ clearTimeout(loadingTimer); loadingTimer = null; }
+      document.getElementById('globalLoading').classList.remove('show');
+    }
+  }
+  // showError dibungkus ulang supaya loading overlay selalu ikut hilang saat request gagal,
+  // dipakai sebagai failure handler default di semua pemanggilan API.run.
+  function showErrorAndHide(err){ hideLoading(); showError(err); }
+
+  /* ---------- DASHBOARD ---------- */
+  google.charts.load('current', {packages:['corechart']});
+
+  function loadDashboard(){
+    showLoading('Memuat dashboard...');
+    API.run.withSuccessHandler(function(d){
+      hideLoading();
+      document.getElementById('dashTotal').innerText = d.total;
+      document.getElementById('dashBaik').innerText = d.baik;
+      document.getElementById('dashRingan').innerText = d.ringan;
+      document.getElementById('dashBerat').innerText = d.berat;
+      drawChart(d);
+    }).withFailureHandler(showErrorAndHide).getDashboardData(TOKEN);
+  }
+
+  function drawChart(d){
+    if(!google.visualization){ google.charts.setOnLoadCallback(function(){ drawChart(d); }); return; }
+    var data = google.visualization.arrayToDataTable([
+      ['Kondisi','Jumlah'],
+      ['Baik', d.baik],
+      ['Rusak Ringan', d.ringan],
+      ['Rusak Berat', d.berat]
+    ]);
+    var options = { colors:['#16a34a','#d97706','#e0393e'], legend:{position:'bottom'}, chartArea:{width:'90%',height:'80%'} };
+    var chart = new google.visualization.PieChart(document.getElementById('chartKondisi'));
+    chart.draw(data, options);
+  }
+
+  /* ---------- INVENTARIS ---------- */
+  var inventarisCache = [];
+  function loadInventarisTable(){
+    showLoading('Memuat data inventaris...');
+    API.run.withSuccessHandler(function(list){
+      hideLoading();
+      inventarisCache = list;
+      populateFilterOptions(list);
+      renderInventarisTable(list);
+    }).withFailureHandler(showErrorAndHide).getInventarisList(TOKEN);
+  }
+
+  function renderInventarisTable(list){
+    var tbody = document.getElementById('tblInventaris');
+    if(!list.length){ tbody.innerHTML = '<tr><td colspan="12" class="empty">Belum ada data barang</td></tr>'; return; }
+    tbody.innerHTML = list.map(function(it){
+      var kondisi = it['kondisi']||'';
+      var kondisiClass = kondisi==='Baik' ? 'baik' : (kondisi==='Rusak Ringan' ? 'ringan' : 'berat');
+      var foto = it['foto'] ? '<img class="thumb" src="'+it['foto']+'">' : '<div class="thumb"></div>';
+      return '<tr class="clickable" onclick="openDetailModal('+it['_row']+')" title="Klik untuk lihat detail">'+
+        '<td class="label-select-col" onclick="event.stopPropagation()"><input type="checkbox" class="inv-check" value="'+it['_row']+'" onchange="onInvCheckChange()"></td>'+
+        '<td data-label="Foto">'+foto+'</td>'+
+        '<td data-label="Kode">'+(it['kode']||'')+'</td>'+
+        '<td data-label="Nama Barang" class="c-nama">'+(it['nama barang']||'')+'</td>'+
+        '<td data-label="Kategori">'+(it['kategori']||'')+'</td>'+
+        '<td data-label="Tahun">'+(it['tahun']||'')+'</td>'+
+        '<td data-label="Bulan">'+(it['bulan']||'')+'</td>'+
+        '<td data-label="Asal/Perolehan">'+(it['asal/perolehan']||'')+'</td>'+
+        '<td data-label="Lokasi">'+(it['lokasi']||'')+'</td>'+
+        '<td data-label="Kondisi"><span class="badge '+kondisiClass+'">'+kondisi+'</span></td>'+
+        '<td data-label="Jumlah">'+(it['jumlah']||0)+'</td>'+
+        '<td data-label="Aksi" class="c-aksi" onclick="event.stopPropagation()">'+
+          '<button class="btn btn-outline btn-sm" onclick="openInventarisModal('+it['_row']+')">Edit</button> '+
+          '<button class="btn btn-danger btn-sm" onclick="deleteInventarisConfirm('+it['_row']+')">Hapus</button>'+
+        '</td>'+
+      '</tr>';
+    }).join('');
+    var chkAll = document.getElementById('chkInvAll');
+    if(chkAll) chkAll.checked = false;
+  }
+
+  function toggleAllInventaris(cb){
+    document.querySelectorAll('.inv-check').forEach(function(el){ el.checked = cb.checked; });
+  }
+
+  function onInvCheckChange(){
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('.inv-check'));
+    var chkAll = document.getElementById('chkInvAll');
+    if(chkAll) chkAll.checked = boxes.length>0 && boxes.every(function(b){ return b.checked; });
+  }
+
+  /* ---------- FILTER INVENTARIS ---------- */
+  function uniqueSorted(list, key){
+    var vals = list.map(function(it){ return (it[key]!==undefined && it[key]!==null) ? String(it[key]).trim() : ''; })
+                    .filter(function(v){ return v!==''; });
+    return Array.from(new Set(vals)).sort(function(a,b){ return a.localeCompare(b,'id'); });
+  }
+
+  function fillSelect(id, values){
+    var sel = document.getElementById(id);
+    var current = sel.value;
+    sel.innerHTML = '<option value="">Semua</option>' + values.map(function(v){
+      return '<option value="'+v.replace(/"/g,'&quot;')+'">'+v+'</option>';
+    }).join('');
+    if(values.indexOf(current) > -1) sel.value = current;
+  }
+
+  function populateFilterOptions(list){
+    fillSelect('filterTahun', uniqueSorted(list,'tahun'));
+    fillSelect('filterBulan', uniqueSorted(list,'bulan'));
+    fillSelect('filterAsal', uniqueSorted(list,'asal/perolehan'));
+    fillSelect('filterLokasi', uniqueSorted(list,'lokasi'));
+    fillSelect('filterKondisi', uniqueSorted(list,'kondisi'));
+  }
+
+  function applyInventarisFilter(){
+    var fTahun = document.getElementById('filterTahun').value;
+    var fBulan = document.getElementById('filterBulan').value;
+    var fAsal = document.getElementById('filterAsal').value;
+    var fLokasi = document.getElementById('filterLokasi').value;
+    var fKondisi = document.getElementById('filterKondisi').value;
+
+    var filtered = inventarisCache.filter(function(it){
+      if(fTahun && String(it['tahun']||'').trim() !== fTahun) return false;
+      if(fBulan && String(it['bulan']||'').trim() !== fBulan) return false;
+      if(fAsal && String(it['asal/perolehan']||'').trim() !== fAsal) return false;
+      if(fLokasi && String(it['lokasi']||'').trim() !== fLokasi) return false;
+      if(fKondisi && String(it['kondisi']||'').trim() !== fKondisi) return false;
+      return true;
+    });
+    renderInventarisTable(filtered);
+  }
+
+  function resetInventarisFilter(){
+    ['filterTahun','filterBulan','filterAsal','filterLokasi','filterKondisi'].forEach(function(id){
+      document.getElementById(id).value = '';
+    });
+    renderInventarisTable(inventarisCache);
+  }
+
+  /* ---------- DETAIL BARANG ---------- */
+  function openDetailModal(rowNum){
+    var it = inventarisCache.find(function(x){ return x['_row']===rowNum; });
+    if(!it) return;
+    document.getElementById('detailTitle').innerText = it['nama barang'] || 'Detail Barang';
+    var fotoEl = document.getElementById('detailFoto');
+    if(it['foto']){ fotoEl.src = it['foto']; fotoEl.style.display = 'block'; }
+    else { fotoEl.style.display = 'none'; }
+    var kondisi = it['kondisi']||'-';
+    var kondisiClass = kondisi==='Baik' ? 'baik' : (kondisi==='Rusak Ringan' ? 'ringan' : 'berat');
+    document.getElementById('detailGrid').innerHTML =
+      '<b>Kode Barang</b><span>'+(it['kode']||'-')+'</span>'+
+      '<b>Nama Barang</b><span>'+(it['nama barang']||'-')+'</span>'+
+      '<b>Kategori</b><span>'+(it['kategori']||'-')+'</span>'+
+      '<b>Tahun</b><span>'+(it['tahun']||'-')+'</span>'+
+      '<b>Bulan</b><span>'+(it['bulan']||'-')+'</span>'+
+      '<b>Asal/Perolehan</b><span>'+(it['asal/perolehan']||'-')+'</span>'+
+      '<b>Lokasi</b><span>'+(it['lokasi']||'-')+'</span>'+
+      '<b>Kondisi</b><span><span class="badge '+kondisiClass+'">'+kondisi+'</span></span>'+
+      '<b>Jumlah</b><span>'+(it['jumlah']||0)+'</span>';
+    openModal('modalDetail');
+  }
+
+  /* ---------- CETAK LABEL BARANG ----------
+     Dicetak langsung dari browser (window.print) memakai layout grid A4, 12 label/lembar.
+     Setiap label berisi: logo sekolah, kode barang, bulan & tahun, dan asal/perolehan. */
+  var labelCache = [];
+  function loadLabelTable(){
+    showLoading('Memuat data barang...');
+    API.run.withSuccessHandler(function(list){
+      hideLoading();
+      labelCache = list;
+      document.getElementById('chkLabelAll').checked = false;
+      var tbody = document.getElementById('tblLabel');
+      if(!list.length){ tbody.innerHTML = '<tr><td colspan="8" class="empty">Belum ada data barang</td></tr>'; return; }
+      tbody.innerHTML = list.map(function(it){
+        return '<tr>'+
+          '<td class="label-select-col"><input type="checkbox" class="label-check" value="'+it['_row']+'"></td>'+
+          '<td>'+(it['kode']||'')+'</td>'+
+          '<td>'+(it['nama barang']||'')+'</td>'+
+          '<td>'+(it['kategori']||'')+'</td>'+
+          '<td>'+(it['tahun']||'')+'</td>'+
+          '<td>'+(it['bulan']||'')+'</td>'+
+          '<td>'+(it['asal/perolehan']||'')+'</td>'+
+          '<td>'+(it['lokasi']||'')+'</td>'+
+        '</tr>';
+      }).join('');
+    }).withFailureHandler(showErrorAndHide).getInventarisList(TOKEN);
+  }
+
+  function toggleAllLabel(cb){
+    document.querySelectorAll('.label-check').forEach(function(el){ el.checked = cb.checked; });
+  }
+
+  function printLabelBarang(){
+    var checked = Array.prototype.slice.call(document.querySelectorAll('.label-check:checked'));
+    if(!checked.length){ showToast('Pilih minimal satu barang untuk dicetak labelnya'); return; }
+    var rows = checked.map(function(c){ return Number(c.value); });
+    var items = labelCache.filter(function(it){ return rows.indexOf(it['_row']) > -1; });
+    buildAndPrintLabels(items);
+  }
+
+  function escapeHtml(s){
+    return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function buildAndPrintLabels(items){
+    var logo = PENGATURAN_CACHE['logo'] || '';
+    var namaSekolah = PENGATURAN_CACHE['nama sekolah'] || '';
+
+    var chunks = [];
+    for(var i=0;i<items.length;i+=12){ chunks.push(items.slice(i,i+12)); }
+
+    var pagesHtml = chunks.map(function(chunk){
+      var cells = chunk.map(function(it){
+        return '<div class="label-item">'+
+            (logo ? '<img class="label-logo" src="'+logo+'">' : '<div class="label-logo-ph"></div>')+
+            '<div class="label-text">'+
+              '<div class="label-kode">'+escapeHtml(it['kode']||'-')+'</div>'+
+              '<div class="label-nama">'+escapeHtml(it['nama barang']||'')+'</div>'+
+              '<div class="label-meta">'+escapeHtml(it['bulan']||'')+' '+escapeHtml(it['tahun']||'')+'</div>'+
+              '<div class="label-asal">'+escapeHtml(it['asal/perolehan']||'')+'</div>'+
+              (namaSekolah ? '<div class="label-sekolah">'+escapeHtml(namaSekolah)+'</div>' : '')+
+            '</div>'+
+          '</div>';
+      }).join('');
+      return '<div class="label-page">'+cells+'</div>';
+    }).join('');
+
+    // 2 label per baris (lebih lebar), 6 baris => tetap 12 label per lembar A4.
+    // Tidak ada lagi pemotongan teks (ellipsis / line-clamp / overflow hidden): semua teks boleh
+    // turun ke baris berikutnya, dan tinggi baris otomatis menyesuaikan kalau teksnya panjang.
+    var css =
+      '@page{ size:A4; margin:8mm; }'+
+      'html,body{ margin:0; padding:0; font-family:Arial,Helvetica,sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }'+
+      '.label-page{ display:grid; grid-template-columns:repeat(2,1fr); grid-auto-rows:minmax(44mm,auto);'+
+        ' gap:2.5mm 3mm; width:194mm; page-break-after:always; break-after:page; align-content:start; }'+
+      '.label-page:last-child{ page-break-after:auto; break-after:auto; }'+
+      '.label-item{ border:1px dashed #999; border-radius:2mm; padding:3.5mm 4mm; display:flex;'+
+        ' gap:4mm; align-items:center; box-sizing:border-box; break-inside:avoid; page-break-inside:avoid; }'+
+      '.label-logo,.label-logo-ph{ width:20mm; height:20mm; object-fit:contain; flex:0 0 auto; }'+
+      '.label-text{ flex:1 1 0; min-width:0; }'+
+      '.label-text > div{ white-space:normal; overflow:visible; overflow-wrap:break-word; word-break:break-word; }'+
+      '.label-kode{ font-weight:bold; font-size:14pt; line-height:1.2; }'+
+      '.label-nama{ font-size:11.5pt; line-height:1.25; margin-top:0.8mm; }'+
+      '.label-meta,.label-asal{ font-size:10pt; line-height:1.3; color:#333; margin-top:0.6mm; }'+
+      '.label-sekolah{ font-size:8.5pt; line-height:1.25; color:#666; margin-top:1.5mm; }';
+
+    var w = window.open('', '_blank');
+    if(!w){ showToast('Popup diblokir browser. Izinkan popup untuk mencetak label.'); return; }
+    w.document.open();
+    w.document.write(
+      '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Cetak Label Barang</title>'+
+      '<style>'+css+'</style></head><body>'+pagesHtml+
+      '<script>window.onload=function(){ setTimeout(function(){ window.print(); }, 350); };<\/script>'+
+      '</body></html>'
+    );
+    w.document.close();
+  }
+
+  function openInventarisModal(rowNum){
+    invFotoBase64 = null; invFotoName = null; invFotoMime = null;
+    document.getElementById('invFoto').value = '';
+    if(rowNum){
+      var it = inventarisCache.find(function(x){ return x['_row']===rowNum; });
+      document.getElementById('modalInventarisTitle').innerText = 'Edit Barang';
+      document.getElementById('invRow').value = it['_row'];
+      document.getElementById('invKode').value = it['kode']||'';
+      document.getElementById('invNama').value = it['nama barang']||'';
+      document.getElementById('invTahun').value = it['tahun']||'';
+      document.getElementById('invBulan').value = it['bulan']||'';
+      document.getElementById('invAsal').value = it['asal/perolehan']||'';
+      document.getElementById('invKategori').value = it['kategori']||'';
+      document.getElementById('invLokasi').value = it['lokasi']||'';
+      document.getElementById('invKondisi').value = it['kondisi']||'Baik';
+      document.getElementById('invJumlah').value = it['jumlah']||0;
+    } else {
+      document.getElementById('modalInventarisTitle').innerText = 'Tambah Barang';
+      document.getElementById('invRow').value = '';
+      ['invKode','invNama','invTahun','invAsal','invKategori','invLokasi','invJumlah'].forEach(function(id){document.getElementById(id).value='';});
+      document.getElementById('invBulan').value = '';
+      document.getElementById('invKondisi').value = 'Baik';
+    }
+    openModal('modalInventaris');
+  }
+
+  document.getElementById('invFoto').addEventListener('change', function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      invFotoBase64 = evt.target.result.split(',')[1];
+      invFotoName = file.name;
+      invFotoMime = file.type;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function saveInventaris(){
+    var rowNum = document.getElementById('invRow').value;
+    var data = {
+      'kode': document.getElementById('invKode').value,
+      'nama barang': document.getElementById('invNama').value,
+      'tahun': document.getElementById('invTahun').value,
+      'bulan': document.getElementById('invBulan').value,
+      'asal/perolehan': document.getElementById('invAsal').value,
+      'kategori': document.getElementById('invKategori').value,
+      'lokasi': document.getElementById('invLokasi').value,
+      'kondisi': document.getElementById('invKondisi').value,
+      'jumlah': Number(document.getElementById('invJumlah').value)||0
+    };
+    if(!data['nama barang']){ showToast('Nama barang wajib diisi'); return; }
+    showLoading('Menyimpan data...');
+    var cb = function(){ hideLoading(); closeModal('modalInventaris'); loadInventarisTable(); showToast('Data berhasil disimpan'); };
+    if(rowNum){
+      API.run.withSuccessHandler(cb).withFailureHandler(showErrorAndHide)
+        .updateInventaris(TOKEN, Number(rowNum), data, invFotoBase64, invFotoName, invFotoMime);
+    } else {
+      API.run.withSuccessHandler(cb).withFailureHandler(showErrorAndHide)
+        .addInventaris(TOKEN, data, invFotoBase64, invFotoName, invFotoMime);
+    }
+  }
+
+  function deleteInventarisConfirm(rowNum){
+    if(!confirm('Hapus barang ini?')) return;
+    showLoading('Menghapus data...');
+    API.run.withSuccessHandler(function(){ hideLoading(); loadInventarisTable(); showToast('Barang dihapus'); })
+      .withFailureHandler(showErrorAndHide).deleteInventaris(TOKEN, rowNum);
+  }
+
+  function getSelectedInventarisRows(){
+    var checked = Array.prototype.slice.call(document.querySelectorAll('.inv-check:checked'));
+    return checked.map(function(c){ return Number(c.value); });
+  }
+
+  function exportExcel(){
+    var rows = getSelectedInventarisRows();
+    if(!rows.length){ showToast('Centang barang yang ingin diekspor, atau centang kotak di kepala kolom untuk memilih semua'); return; }
+    showLoading('Menyiapkan file Excel...');
+    API.run.withSuccessHandler(function(base64){
+      hideLoading();
+      downloadBase64(base64, 'Inventaris.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }).withFailureHandler(showErrorAndHide).exportInventarisExcel(TOKEN, rows);
+  }
+
+  function exportPDF(){
+    var rows = getSelectedInventarisRows();
+    if(!rows.length){ showToast('Centang barang yang ingin diekspor, atau centang kotak di kepala kolom untuk memilih semua'); return; }
+    showLoading('Menyiapkan file PDF (kop + foto barang)...');
+    API.run.withSuccessHandler(function(base64){
+      hideLoading();
+      downloadBase64(base64, 'Inventaris.pdf', 'application/pdf');
+    }).withFailureHandler(showErrorAndHide).exportInventarisPDF(TOKEN, rows);
+  }
+
+  /* ---------- TEMPLATE & IMPOR EXCEL ---------- */
+  function downloadTemplateExcel(){
+    showLoading('Menyiapkan template Excel...');
+    API.run.withSuccessHandler(function(base64){
+      hideLoading();
+      downloadBase64(base64, 'Template_Import_Inventaris.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }).withFailureHandler(showErrorAndHide).downloadTemplateInventarisExcel(TOKEN);
+  }
+
+  function triggerImportExcel(){
+    document.getElementById('importExcelInput').click();
+  }
+
+  function handleImportExcelFile(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    if(!confirm('Impor data dari file "'+file.name+'"? Data pada file akan ditambahkan ke daftar inventaris.')){
+      e.target.value = '';
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      var base64 = evt.target.result.split(',')[1];
+      showLoading('Mengimpor data dari Excel...');
+      API.run.withSuccessHandler(function(res){
+        hideLoading();
+        e.target.value = '';
+        if(!res.success){ showToast(res.message || 'Impor gagal'); return; }
+        loadInventarisTable();
+        var msg = 'Berhasil impor ' + res.imported + ' barang';
+        if(res.failedRows && res.failedRows.length) msg += ' (baris gagal: ' + res.failedRows.join(', ') + ')';
+        showToast(msg);
+      }).withFailureHandler(function(err){ hideLoading(); e.target.value=''; showError(err); })
+        .importInventarisExcel(TOKEN, base64, file.name, file.type);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function downloadBase64(base64, filename, mime){
+    var link = document.createElement('a');
+    link.href = 'data:' + mime + ';base64,' + base64;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  /* ---------- BUKU ASET (klon Buku Inventaris, sheet "aset") ---------- */
+  var asetCache = [];
+  function loadAsetTable(){
+    showLoading('Memuat data aset...');
+    API.run.withSuccessHandler(function(list){
+      hideLoading();
+      asetCache = list;
+      populateAsetFilterOptions(list);
+      renderAsetTable(list);
+    }).withFailureHandler(showErrorAndHide).getAsetList(TOKEN);
+  }
+
+  function renderAsetTable(list){
+    var tbody = document.getElementById('tblAset');
+    if(!list.length){ tbody.innerHTML = '<tr><td colspan="12" class="empty">Belum ada data aset</td></tr>'; return; }
+    tbody.innerHTML = list.map(function(it){
+      var kondisi = it['kondisi']||'';
+      var kondisiClass = kondisi==='Baik' ? 'baik' : (kondisi==='Rusak Ringan' ? 'ringan' : 'berat');
+      var foto = it['foto'] ? '<img class="thumb" src="'+it['foto']+'">' : '<div class="thumb"></div>';
+      return '<tr class="clickable" onclick="openAsetDetailModal('+it['_row']+')" title="Klik untuk lihat detail">'+
+        '<td class="label-select-col" onclick="event.stopPropagation()"><input type="checkbox" class="aset-check" value="'+it['_row']+'" onchange="onAsetCheckChange()"></td>'+
+        '<td data-label="Foto">'+foto+'</td>'+
+        '<td data-label="Kode">'+(it['kode']||'')+'</td>'+
+        '<td data-label="Nama Barang" class="c-nama">'+(it['nama barang']||'')+'</td>'+
+        '<td data-label="Kategori">'+(it['kategori']||'')+'</td>'+
+        '<td data-label="Tahun">'+(it['tahun']||'')+'</td>'+
+        '<td data-label="Bulan">'+(it['bulan']||'')+'</td>'+
+        '<td data-label="Asal/Perolehan">'+(it['asal/perolehan']||'')+'</td>'+
+        '<td data-label="Lokasi">'+(it['lokasi']||'')+'</td>'+
+        '<td data-label="Kondisi"><span class="badge '+kondisiClass+'">'+kondisi+'</span></td>'+
+        '<td data-label="Jumlah">'+(it['jumlah']||0)+'</td>'+
+        '<td data-label="Aksi" class="c-aksi" onclick="event.stopPropagation()">'+
+          '<button class="btn btn-outline btn-sm" onclick="openAsetModal('+it['_row']+')">Edit</button> '+
+          '<button class="btn btn-danger btn-sm" onclick="deleteAsetConfirm('+it['_row']+')">Hapus</button>'+
+        '</td>'+
+      '</tr>';
+    }).join('');
+    var chkAll = document.getElementById('chkAsetAll');
+    if(chkAll) chkAll.checked = false;
+  }
+
+  function toggleAllAset(cb){
+    document.querySelectorAll('.aset-check').forEach(function(el){ el.checked = cb.checked; });
+  }
+
+  function onAsetCheckChange(){
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('.aset-check'));
+    var chkAll = document.getElementById('chkAsetAll');
+    if(chkAll) chkAll.checked = boxes.length>0 && boxes.every(function(b){ return b.checked; });
+  }
+
+  /* ---------- FILTER INVENTARIS ---------- */
+  function uniqueSorted(list, key){
+    var vals = list.map(function(it){ return (it[key]!==undefined && it[key]!==null) ? String(it[key]).trim() : ''; })
+                    .filter(function(v){ return v!==''; });
+    return Array.from(new Set(vals)).sort(function(a,b){ return a.localeCompare(b,'id'); });
+  }
+
+  function fillSelect(id, values){
+    var sel = document.getElementById(id);
+    var current = sel.value;
+    sel.innerHTML = '<option value="">Semua</option>' + values.map(function(v){
+      return '<option value="'+v.replace(/"/g,'&quot;')+'">'+v+'</option>';
+    }).join('');
+    if(values.indexOf(current) > -1) sel.value = current;
+  }
+
+  function populateAsetFilterOptions(list){
+    fillSelect('asetFilterTahun', uniqueSorted(list,'tahun'));
+    fillSelect('asetFilterBulan', uniqueSorted(list,'bulan'));
+    fillSelect('asetFilterAsal', uniqueSorted(list,'asal/perolehan'));
+    fillSelect('asetFilterLokasi', uniqueSorted(list,'lokasi'));
+    fillSelect('asetFilterKondisi', uniqueSorted(list,'kondisi'));
+  }
+
+  function applyAsetFilter(){
+    var fTahun = document.getElementById('asetFilterTahun').value;
+    var fBulan = document.getElementById('asetFilterBulan').value;
+    var fAsal = document.getElementById('asetFilterAsal').value;
+    var fLokasi = document.getElementById('asetFilterLokasi').value;
+    var fKondisi = document.getElementById('asetFilterKondisi').value;
+
+    var filtered = asetCache.filter(function(it){
+      if(fTahun && String(it['tahun']||'').trim() !== fTahun) return false;
+      if(fBulan && String(it['bulan']||'').trim() !== fBulan) return false;
+      if(fAsal && String(it['asal/perolehan']||'').trim() !== fAsal) return false;
+      if(fLokasi && String(it['lokasi']||'').trim() !== fLokasi) return false;
+      if(fKondisi && String(it['kondisi']||'').trim() !== fKondisi) return false;
+      return true;
+    });
+    renderAsetTable(filtered);
+  }
+
+  function resetAsetFilter(){
+    ['asetFilterTahun','asetFilterBulan','asetFilterAsal','asetFilterLokasi','asetFilterKondisi'].forEach(function(id){
+      document.getElementById(id).value = '';
+    });
+    renderAsetTable(asetCache);
+  }
+
+  /* ---------- DETAIL BARANG ---------- */
+  function openAsetDetailModal(rowNum){
+    var it = asetCache.find(function(x){ return x['_row']===rowNum; });
+    if(!it) return;
+    document.getElementById('asetDetailTitle').innerText = it['nama barang'] || 'Detail Aset';
+    var fotoEl = document.getElementById('asetDetailFoto');
+    if(it['foto']){ fotoEl.src = it['foto']; fotoEl.style.display = 'block'; }
+    else { fotoEl.style.display = 'none'; }
+    var kondisi = it['kondisi']||'-';
+    var kondisiClass = kondisi==='Baik' ? 'baik' : (kondisi==='Rusak Ringan' ? 'ringan' : 'berat');
+    document.getElementById('asetDetailGrid').innerHTML =
+      '<b>Kode Barang</b><span>'+(it['kode']||'-')+'</span>'+
+      '<b>Nama Barang</b><span>'+(it['nama barang']||'-')+'</span>'+
+      '<b>Kategori</b><span>'+(it['kategori']||'-')+'</span>'+
+      '<b>Tahun</b><span>'+(it['tahun']||'-')+'</span>'+
+      '<b>Bulan</b><span>'+(it['bulan']||'-')+'</span>'+
+      '<b>Asal/Perolehan</b><span>'+(it['asal/perolehan']||'-')+'</span>'+
+      '<b>Lokasi</b><span>'+(it['lokasi']||'-')+'</span>'+
+      '<b>Kondisi</b><span><span class="badge '+kondisiClass+'">'+kondisi+'</span></span>'+
+      '<b>Jumlah</b><span>'+(it['jumlah']||0)+'</span>';
+    openModal('modalAsetDetail');
+  }
+
+  function openAsetModal(rowNum){
+    asetFotoBase64 = null; asetFotoName = null; asetFotoMime = null;
+    document.getElementById('asetFoto').value = '';
+    if(rowNum){
+      var it = asetCache.find(function(x){ return x['_row']===rowNum; });
+      document.getElementById('modalAsetTitle').innerText = 'Edit Aset';
+      document.getElementById('asetRow').value = it['_row'];
+      document.getElementById('asetKode').value = it['kode']||'';
+      document.getElementById('asetNama').value = it['nama barang']||'';
+      document.getElementById('asetTahun').value = it['tahun']||'';
+      document.getElementById('asetBulan').value = it['bulan']||'';
+      document.getElementById('asetAsal').value = it['asal/perolehan']||'';
+      document.getElementById('asetKategori').value = it['kategori']||'';
+      document.getElementById('asetLokasi').value = it['lokasi']||'';
+      document.getElementById('asetKondisi').value = it['kondisi']||'Baik';
+      document.getElementById('asetJumlah').value = it['jumlah']||0;
+    } else {
+      document.getElementById('modalAsetTitle').innerText = 'Tambah Aset';
+      document.getElementById('asetRow').value = '';
+      ['asetKode','asetNama','asetTahun','asetAsal','asetKategori','asetLokasi','asetJumlah'].forEach(function(id){document.getElementById(id).value='';});
+      document.getElementById('asetBulan').value = '';
+      document.getElementById('asetKondisi').value = 'Baik';
+    }
+    openModal('modalAset');
+  }
+
+  document.getElementById('asetFoto').addEventListener('change', function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      asetFotoBase64 = evt.target.result.split(',')[1];
+      asetFotoName = file.name;
+      asetFotoMime = file.type;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function saveAset(){
+    var rowNum = document.getElementById('asetRow').value;
+    var data = {
+      'kode': document.getElementById('asetKode').value,
+      'nama barang': document.getElementById('asetNama').value,
+      'tahun': document.getElementById('asetTahun').value,
+      'bulan': document.getElementById('asetBulan').value,
+      'asal/perolehan': document.getElementById('asetAsal').value,
+      'kategori': document.getElementById('asetKategori').value,
+      'lokasi': document.getElementById('asetLokasi').value,
+      'kondisi': document.getElementById('asetKondisi').value,
+      'jumlah': Number(document.getElementById('asetJumlah').value)||0
+    };
+    if(!data['nama barang']){ showToast('Nama barang wajib diisi'); return; }
+    showLoading('Menyimpan data...');
+    var cb = function(){ hideLoading(); closeModal('modalAset'); loadAsetTable(); showToast('Data berhasil disimpan'); };
+    if(rowNum){
+      API.run.withSuccessHandler(cb).withFailureHandler(showErrorAndHide)
+        .updateAset(TOKEN, Number(rowNum), data, asetFotoBase64, asetFotoName, asetFotoMime);
+    } else {
+      API.run.withSuccessHandler(cb).withFailureHandler(showErrorAndHide)
+        .addAset(TOKEN, data, asetFotoBase64, asetFotoName, asetFotoMime);
+    }
+  }
+
+  function deleteAsetConfirm(rowNum){
+    if(!confirm('Hapus aset ini?')) return;
+    showLoading('Menghapus data...');
+    API.run.withSuccessHandler(function(){ hideLoading(); loadAsetTable(); showToast('Aset dihapus'); })
+      .withFailureHandler(showErrorAndHide).deleteAset(TOKEN, rowNum);
+  }
+
+  function getSelectedAsetRows(){
+    var checked = Array.prototype.slice.call(document.querySelectorAll('.aset-check:checked'));
+    return checked.map(function(c){ return Number(c.value); });
+  }
+
+  function exportAsetToExcel(){
+    var rows = getSelectedAsetRows();
+    if(!rows.length){ showToast('Centang aset yang ingin diekspor, atau centang kotak di kepala kolom untuk memilih semua'); return; }
+    showLoading('Menyiapkan file Excel...');
+    API.run.withSuccessHandler(function(base64){
+      hideLoading();
+      downloadBase64(base64, 'Aset.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }).withFailureHandler(showErrorAndHide).exportAsetExcel(TOKEN, rows);
+  }
+
+  function exportAsetToPDF(){
+    var rows = getSelectedAsetRows();
+    if(!rows.length){ showToast('Centang aset yang ingin diekspor, atau centang kotak di kepala kolom untuk memilih semua'); return; }
+    showLoading('Menyiapkan file PDF (kop + foto aset)...');
+    API.run.withSuccessHandler(function(base64){
+      hideLoading();
+      downloadBase64(base64, 'Aset.pdf', 'application/pdf');
+    }).withFailureHandler(showErrorAndHide).exportAsetPDF(TOKEN, rows);
+  }
+
+  /* ---------- TEMPLATE & IMPOR EXCEL ---------- */
+  function downloadTemplateAset(){
+    showLoading('Menyiapkan template Excel...');
+    API.run.withSuccessHandler(function(base64){
+      hideLoading();
+      downloadBase64(base64, 'Template_Import_Aset.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }).withFailureHandler(showErrorAndHide).downloadTemplateAsetExcel(TOKEN);
+  }
+
+  function triggerImportAset(){
+    document.getElementById('importAsetInput').click();
+  }
+
+  function handleImportAsetFile(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    if(!confirm('Impor data dari file "'+file.name+'"? Data pada file akan ditambahkan ke daftar aset.')){
+      e.target.value = '';
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      var base64 = evt.target.result.split(',')[1];
+      showLoading('Mengimpor data dari Excel...');
+      API.run.withSuccessHandler(function(res){
+        hideLoading();
+        e.target.value = '';
+        if(!res.success){ showToast(res.message || 'Impor gagal'); return; }
+        loadAsetTable();
+        var msg = 'Berhasil impor ' + res.imported + ' aset';
+        if(res.failedRows && res.failedRows.length) msg += ' (baris gagal: ' + res.failedRows.join(', ') + ')';
+        showToast(msg);
+      }).withFailureHandler(function(err){ hideLoading(); e.target.value=''; showError(err); })
+        .importAsetExcel(TOKEN, base64, file.name, file.type);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* ---------- LOG AKTIVITAS ---------- */
+  function loadLogTable(){
+    var tbody = document.getElementById('tblLog');
+    tbody.innerHTML = '<tr><td colspan="4" class="loading">Memuat data...</td></tr>';
+    showLoading('Memuat log aktivitas...');
+    API.run.withSuccessHandler(function(list){
+      hideLoading();
+      if(!list.length){ tbody.innerHTML = '<tr><td colspan="4" class="empty">Belum ada aktivitas</td></tr>'; return; }
+      tbody.innerHTML = list.map(function(l){
+        var waktu = l['waktu'] ? new Date(l['waktu']).toLocaleString('id-ID') : '';
+        return '<tr><td>'+waktu+'</td><td>'+(l['user']||'')+'</td><td>'+(l['aktivitas']||'')+'</td><td>'+(l['keterangan']||'')+'</td></tr>';
+      }).join('');
+    }).withFailureHandler(function(err){
+      hideLoading();
+      // Tampilkan alasan gagal langsung di tabel (bukan cuma toast) supaya kelihatan
+      // kalau penyebabnya mis. nama sheet "log aktivitas" tidak cocok di spreadsheet.
+      tbody.innerHTML = '<tr><td colspan="4" class="empty" style="color:var(--danger);">Gagal memuat log aktivitas: '+(err.message||err)+'</td></tr>';
+      showError(err);
+    }).getLogAktivitas(TOKEN);
+  }
+
+  /* ---------- USER ---------- */
+  var userCache = [];
+  function loadUserTable(){
+    showLoading('Memuat data user...');
+    API.run.withSuccessHandler(function(list){
+      hideLoading();
+      userCache = list;
+      var tbody = document.getElementById('tblUser');
+      if(!list.length){ tbody.innerHTML = '<tr><td colspan="4" class="empty">Belum ada user</td></tr>'; return; }
+      tbody.innerHTML = list.map(function(u){
+        var roleClass = u['role']==='Admin' ? 'admin' : 'userrole';
+        return '<tr>'+
+          '<td>'+(u['username']||'')+'</td>'+
+          '<td>'+(u['nama']||'')+'</td>'+
+          '<td><span class="badge '+roleClass+'">'+(u['role']||'')+'</span></td>'+
+          '<td>'+
+            '<button class="btn btn-outline btn-sm" onclick="openUserModal(\''+u['username']+'\')">Edit</button> '+
+            '<button class="btn btn-danger btn-sm" onclick="deleteUserConfirm(\''+u['username']+'\')">Hapus</button>'+
+          '</td>'+
+        '</tr>';
+      }).join('');
+    }).withFailureHandler(showErrorAndHide).getUserList(TOKEN);
+  }
+
+  function openUserModal(username){
+    if(username){
+      var u = userCache.find(function(x){ return x['username']===username; });
+      document.getElementById('modalUserTitle').innerText = 'Edit User';
+      document.getElementById('usrOriginalUsername').value = u['username'];
+      document.getElementById('usrUsername').value = u['username']||'';
+      document.getElementById('usrNama').value = u['nama']||'';
+      document.getElementById('usrPassword').value = '';
+      document.getElementById('usrPwHint').innerText = '(kosongkan jika tidak diubah)';
+      document.getElementById('usrRole').value = u['role']||'User';
+    } else {
+      document.getElementById('modalUserTitle').innerText = 'Tambah User';
+      document.getElementById('usrOriginalUsername').value = '';
+      document.getElementById('usrUsername').value = '';
+      document.getElementById('usrNama').value = '';
+      document.getElementById('usrPassword').value = '';
+      document.getElementById('usrPwHint').innerText = '';
+      document.getElementById('usrRole').value = 'User';
+    }
+    openModal('modalUser');
+  }
+
+  function saveUser(){
+    var originalUsername = document.getElementById('usrOriginalUsername').value;
+    var data = {
+      'username': document.getElementById('usrUsername').value,
+      'nama': document.getElementById('usrNama').value,
+      'password': document.getElementById('usrPassword').value,
+      'role': document.getElementById('usrRole').value
+    };
+    if(!data['username']){ showToast('Username wajib diisi'); return; }
+    showLoading('Menyimpan user...');
+    var cb = function(){ hideLoading(); closeModal('modalUser'); loadUserTable(); showToast('User berhasil disimpan'); };
+    if(originalUsername){
+      API.run.withSuccessHandler(cb).withFailureHandler(showErrorAndHide).updateUser(TOKEN, originalUsername, data);
+    } else {
+      if(!data['password']){ hideLoading(); showToast('Password wajib diisi untuk user baru'); return; }
+      API.run.withSuccessHandler(cb).withFailureHandler(showErrorAndHide).addUser(TOKEN, data);
+    }
+  }
+
+  function deleteUserConfirm(username){
+    if(!confirm('Hapus user "'+username+'"?')) return;
+    showLoading('Menghapus user...');
+    API.run.withSuccessHandler(function(){ hideLoading(); loadUserTable(); showToast('User dihapus'); })
+      .withFailureHandler(showErrorAndHide).deleteUser(TOKEN, username);
+  }
+
+  /* ---------- PENGATURAN (profil sekolah) ----------
+     Kolom Kota, Kepala Sekolah dan Tanggal sengaja tidak ditampilkan lagi di sini
+     (sesuai revisi). Nilainya tetap dipertahankan di sheet oleh backend (updatePengaturan),
+     hanya tidak lagi bisa diedit lewat form web ini.
+     Kop Sekolah = gambar kepala surat (letterhead) yang dipakai sebagai header saat
+     export PDF, terpisah dari Logo (yang dipakai kecil di sidebar & halaman login). */
+  function loadPengaturan(){
+    showLoading('Memuat pengaturan...');
+    API.run.withSuccessHandler(function(p){
+      hideLoading();
+      logoBase64 = null; logoName = null; logoMime = null;
+      kopBase64 = null; kopName = null; kopMime = null;
+      var logoPreview = p['logo'] ? '<img class="current-logo" src="'+p['logo']+'"><br>' : '';
+      var kopPreview = p['kop'] ? '<img class="current-logo" style="width:auto;max-width:260px;height:60px;" src="'+p['kop']+'"><br>' : '';
+      document.getElementById('formPengaturan').innerHTML =
+        '<div class="row2">'+
+          '<div class="field">'+logoPreview+'<label>Logo Sekolah</label><input type="file" id="setLogo" accept="image/*">'+
+            '<div style="font-size:11px;color:var(--muted);margin-top:4px;">Ditampilkan kecil di sidebar & halaman login.</div></div>'+
+          '<div class="field">'+kopPreview+'<label>Kop Sekolah (Kepala Surat)</label><input type="file" id="setKop" accept="image/*">'+
+            '<div style="font-size:11px;color:var(--muted);margin-top:4px;">Dipakai sebagai header saat export PDF Daftar Inventaris.</div></div>'+
+        '</div>'+
+        '<div class="row3">'+
+          '<div class="field"><label>Nama Sekolah</label><input type="text" id="setNamaSekolah" value="'+(p['nama sekolah']||'')+'"></div>'+
+          '<div class="field"><label>Alamat</label><input type="text" id="setAlamat" value="'+(p['alamat']||'')+'"></div>'+
+          '<div class="field"><label>Kontak</label><input type="text" id="setKontak" value="'+(p['kontak']||'')+'"></div>'+
+        '</div>'+
+        '<button class="btn btn-primary" onclick="savePengaturan()">Simpan Pengaturan</button>';
+      document.getElementById('setLogo').addEventListener('change', function(e){
+        var file = e.target.files[0];
+        if(!file) return;
+        var reader = new FileReader();
+        reader.onload = function(evt){
+          logoBase64 = evt.target.result.split(',')[1];
+          logoName = file.name; logoMime = file.type;
+        };
+        reader.readAsDataURL(file);
+      });
+      document.getElementById('setKop').addEventListener('change', function(e){
+        var file = e.target.files[0];
+        if(!file) return;
+        var reader = new FileReader();
+        reader.onload = function(evt){
+          kopBase64 = evt.target.result.split(',')[1];
+          kopName = file.name; kopMime = file.type;
+        };
+        reader.readAsDataURL(file);
+      });
+    }).withFailureHandler(showErrorAndHide).getPengaturan(TOKEN);
+  }
+
+  function savePengaturan(){
+    var data = {
+      'nama sekolah': document.getElementById('setNamaSekolah').value,
+      'alamat': document.getElementById('setAlamat').value,
+      'kontak': document.getElementById('setKontak').value
+    };
+    showLoading('Menyimpan pengaturan...');
+    API.run.withSuccessHandler(function(){
+      hideLoading();
+      showToast('Pengaturan disimpan');
+      loadBrand();
+      loadPengaturan();
+    }).withFailureHandler(showErrorAndHide).updatePengaturan(TOKEN, data, logoBase64, logoName, logoMime, kopBase64, kopName, kopMime);
+  }
+</script>
 </body>
 </html>
